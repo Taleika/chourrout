@@ -11,8 +11,13 @@ const firebaseConfig = {
   appId: '1:445746574968:web:4a7e51a11112184b559f8d'
 };
 
+const ALLOWED_EMAILS = [
+  'ferpache8@gmail.com',
+  'chourrout.presupuestos@gmail.com'
+];
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { app, db, auth, firebaseConfig };
+export { app, db, auth, firebaseConfig, ALLOWED_EMAILS };
