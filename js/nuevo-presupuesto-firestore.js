@@ -4,6 +4,8 @@ import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https
 const DRAFT_KEY='chourrout_presupuesto_actual';
 const SAVED_KEY='chourrout_presupuestos_guardados';
 const CLIENTES_KEY='chourrout_clientes';
+const ADD_QUEUE_KEY='chourrout_productos_para_agregar';
+const PENDING_ADD_KEY='chourrout_producto_para_agregar';
 let catalogoFirestore=[];
 let syncTimer=null;
 
@@ -11,6 +13,44 @@ function leerJson(key,fallback){try{return JSON.parse(localStorage.getItem(key)|
 function escribirJson(key,value){localStorage.setItem(key,JSON.stringify(value));}
 function nuevoNumero(){return String(Date.now()).slice(-6);}
 function idPresupuesto(numero){return `P-${String(numero||nuevoNumero()).replace(/[^a-zA-Z0-9_-]/g,'')}`;}
+
+function iniciarPresupuestoVacioSiCorresponde(){
+  const url=new URL(location.href);
+  if(url.searchParams.get('nuevo')!=='1')return;
+  localStorage.removeItem(DRAFT_KEY);
+  localStorage.removeItem(ADD_QUEUE_KEY);
+  localStorage.removeItem(PENDING_ADD_KEY);
+  url.searchParams.delete('nuevo');
+  history.replaceState({},'',url.pathname+(url.search||'')+(url.hash||''));
+}
+
+function enteroNoNegativo(valor){
+  const n=Number(valor);
+  return Number.isFinite(n)?Math.max(0,Math.round(n)):0;
+}
+
+function normalizarInputCantidad(input,disparar=false){
+  if(!input?.classList?.contains('js-cantidad'))return;
+  input.step='1';
+  input.min='0';
+  const entero=enteroNoNegativo(input.value);
+  if(String(entero)!==String(input.value)){
+    input.value=String(entero);
+    if(disparar)input.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+}
+
+function normalizarInputsCantidad(disparar=false){
+  document.querySelectorAll('.js-cantidad').forEach(input=>normalizarInputCantidad(input,disparar));
+}
+
+// Se ejecuta en captura para que el código del presupuesto siempre reciba un entero.
+document.addEventListener('input',e=>{
+  const input=e.target;
+  if(!input?.classList?.contains('js-cantidad'))return;
+  const entero=enteroNoNegativo(input.value);
+  if(String(entero)!==String(input.value))input.value=String(entero);
+},true);
 
 function normalizarProducto(p){
   return {id:String(p.id||''),categoria:String(p.categoria||''),producto:String(p.producto||''),variante:String(p.variante||''),medida:String(p.medida||''),unidad:String(p.unidad||'unidad'),precio:Number(p.precio)||999,iva:p.iva||'Sin IVA',estado:p.estado||'Activo',observaciones:String(p.observaciones||''),pendiente:Boolean(p.pendiente)||Number(p.precio)===999,tranquera:Boolean(p.tranquera),tiretas:Boolean(p.tiretas)};
@@ -49,14 +89,17 @@ function prepararBorradorConPreciosActuales(){
     copia.numero=nuevoNumero();
     copia.estado='borrador';
     copia.actualizadoEn=new Date().toISOString();
+    copia.items=(copia.items||[]).map(i=>({...i,cantidad:enteroNoNegativo(i.cantidad)}));
     escribirJson(DRAFT_KEY,copia);
     return;
   }
   if(!Array.isArray(draft.items)||!catalogoFirestore.length)return;
   const mapa=new Map(catalogoFirestore.map(p=>[p.id,p]));
   draft.items=draft.items.map(i=>{
-    const actual=mapa.get(i.id);if(!actual)return i;
-    return {...i,precio:Number(actual.precio)||999,precioActual:Number(actual.precio)||999,pendiente:Boolean(actual.pendiente)||Number(actual.precio)===999,iva:actual.iva||i.iva,producto:actual.producto||i.producto,variante:actual.variante??i.variante,medida:actual.medida??i.medida,unidad:actual.unidad||i.unidad};
+    const actual=mapa.get(i.id);
+    const base={...i,cantidad:enteroNoNegativo(i.cantidad)};
+    if(!actual)return base;
+    return {...base,precio:Number(actual.precio)||999,precioActual:Number(actual.precio)||999,pendiente:Boolean(actual.pendiente)||Number(actual.precio)===999,iva:actual.iva||i.iva,producto:actual.producto||i.producto,variante:actual.variante??i.variante,medida:actual.medida??i.medida,unidad:actual.unidad||i.unidad};
   });
   draft.actualizadoEn=new Date().toISOString();
   escribirJson(DRAFT_KEY,draft);
@@ -64,6 +107,7 @@ function prepararBorradorConPreciosActuales(){
 
 async function guardarSnapshotFirestore(snapshot){
   if(!snapshot||!snapshot.numero)return;
+  snapshot={...snapshot,items:(snapshot.items||[]).map(i=>({...i,cantidad:enteroNoNegativo(i.cantidad)}))};
   if(snapshot.estado!=='definitivo'){
     const refActual=doc(db,'presupuestos',idPresupuesto(snapshot.numero));
     const existente=await getDoc(refActual);
@@ -92,9 +136,16 @@ async function sincronizarBorrador(){
 }
 function programarSync(){clearTimeout(syncTimer);syncTimer=setTimeout(sincronizarBorrador,700);}
 
+iniciarPresupuestoVacioSiCorresponde();
 await Promise.all([cargarCatalogoFirestore(),cargarClientesFirestore()]);
 prepararBorradorConPreciosActuales();
 await import('./nuevo-presupuesto.js');
+
+normalizarInputsCantidad(true);
+const itemsContenedor=document.getElementById('itemsPresupuesto');
+if(itemsContenedor){
+  new MutationObserver(()=>normalizarInputsCantidad(false)).observe(itemsContenedor,{childList:true,subtree:true});
+}
 
 const nota=document.querySelector('.prototype-note');if(nota)nota.textContent='Borradores y presupuestos definitivos se guardan en Firebase. Los borradores toman los precios vigentes; al cerrar un presupuesto, sus precios quedan congelados.';
 
