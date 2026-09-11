@@ -36,7 +36,8 @@
 
   const nuevos = [
     {id:'P0129',categoria:'Mangas para cerdo',producto:'Puerta corrediza',variante:'',medida:'',unidad:'unidad',precio:268440,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
-    {id:'P0130',categoria:'Mangas para cerdo',producto:'Cepo',variante:'',medida:'',unidad:'unidad',precio:318000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false}
+    {id:'P0130',categoria:'Mangas para cerdo',producto:'Cepo',variante:'',medida:'',unidad:'unidad',precio:318000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
+    {id:'P0131',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'7,00 m',unidad:'unidad',precio:59000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false}
   ];
 
   nuevos.forEach(n=>{
