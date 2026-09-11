@@ -29,7 +29,6 @@ export async function cerrarSesion(){
 
 function rutaLogin(){
   const path = location.pathname;
-  const depth = path.split('/').filter(Boolean).length;
   const inSubfolder = /\/(admin|presupuestos)\//.test(path);
   return inSubfolder ? '../login.html' : 'login.html';
 }
@@ -39,10 +38,24 @@ function destinoActual(){
   return url.pathname + url.search + url.hash;
 }
 
+function prepararEnlacesNuevoPresupuesto(){
+  document.querySelectorAll('a[href]').forEach(a=>{
+    if(a.id==='volverPresupuesto' || a.dataset.preserveBudget==='true') return;
+    const href=a.getAttribute('href')||'';
+    if(!/(^|\/)nuevo\.html(?:[?#].*)?$/.test(href)) return;
+    try{
+      const url=new URL(href,location.href);
+      url.searchParams.set('nuevo','1');
+      a.href=url.href;
+    }catch(e){}
+  });
+}
+
 export function protegerPagina(){
   document.documentElement.style.visibility='hidden';
   onAuthStateChanged(auth, async user => {
     if(autorizado(user)){
+      prepararEnlacesNuevoPresupuesto();
       document.documentElement.style.visibility='visible';
       document.dispatchEvent(new CustomEvent('ch-auth-ready',{detail:{user}}));
       actualizarUsuarioUI(user);
@@ -84,7 +97,7 @@ function actualizarUsuarioUI(user){
 }
 
 function escapeHtml(v){
-  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]));
 }
 
 export { autorizado };
