@@ -1,12 +1,12 @@
 const productos = [
-  {id:'P0002',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,20 m',unidad:'unidad',precio:49900,iva:'Por definir',estado:'Activo',pendiente:false},
-  {id:'P0014',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'1,80 m',unidad:'unidad',precio:999,iva:'Por definir',estado:'Activo',pendiente:true},
-  {id:'P0044',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,20 m',unidad:'unidad',precio:2560,iva:'21%',estado:'Activo',pendiente:false},
-  {id:'P0045',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,40 m',unidad:'unidad',precio:3170,iva:'21%',estado:'Activo',pendiente:false},
-  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:'10,5%',estado:'Activo',pendiente:false},
-  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:'21%',estado:'Activo',pendiente:false,tranquera:true},
-  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:'21%',estado:'Activo',pendiente:false,tranquera:true},
-  {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:'Por definir',estado:'Activo',pendiente:true}
+  {id:'P0002',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,20 m',unidad:'unidad',precio:49900,iva:'Sin IVA',estado:'Activo',pendiente:false},
+  {id:'P0014',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'1,80 m',unidad:'unidad',precio:999,iva:'Sin IVA',estado:'Activo',pendiente:true},
+  {id:'P0044',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,20 m',unidad:'unidad',precio:2560,iva:'Sin IVA',estado:'Activo',pendiente:false},
+  {id:'P0045',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,40 m',unidad:'unidad',precio:3170,iva:'Sin IVA',estado:'Activo',pendiente:false},
+  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:'Sin IVA',estado:'Activo',pendiente:false},
+  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:'Sin IVA',estado:'Activo',pendiente:false,tranquera:true},
+  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:'Sin IVA',estado:'Activo',pendiente:false,tranquera:true},
+  {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:'Sin IVA',estado:'Activo',pendiente:true}
 ];
 
 const DRAFT_KEY = 'chourrout_presupuesto_actual';
@@ -96,7 +96,7 @@ window.agregarAPresupuesto = function(id){
     medida:p.medida||'',
     unidad:p.unidad,
     precio:Number(p.precio)||999,
-    iva:ivaNumero(p.iva),
+    iva:0,
     pendiente:Boolean(p.pendiente),
     tranquera:Boolean(p.tranquera)
   };
@@ -142,6 +142,7 @@ window.editar = function(id){
 document.getElementById('btnNuevo').addEventListener('click',()=>{
   editando = null;
   document.getElementById('modalTitulo').textContent = 'Nuevo producto';
+  document.getElementById('fIva').value = 'Sin IVA';
   abrirModal();
 });
 document.getElementById('cerrarModal').addEventListener('click',cerrarModal);
