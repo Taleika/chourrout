@@ -10,6 +10,9 @@ const extrasTranquera = [
   {label:'Tranquera ciega +140%',factor:1.40}
 ];
 
+const EXTRA_DIBUJO_TIRETAS = 77000;
+const EXTRA_CUADRADOS_TIRETAS = 106000;
+
 const DRAFT_KEY='chourrout_presupuesto_actual';
 const SAVED_KEY='chourrout_presupuestos_guardados';
 const PENDING_ADD_KEY='chourrout_producto_para_agregar';
@@ -69,6 +72,7 @@ function cargarDraft(){
     document.getElementById('observaciones').value=draft.observaciones||'';
     ivaGlobal.value=draft.ivaGlobal ?? '0';
     items=Array.isArray(draft.items)?draft.items:[];
+    items=items.map(i=>({dibujos:Number(i.dibujos||0),cuadrados:Number(i.cuadrados||0),...i}));
     itemSeq=Math.max(1,...items.map(i=>Number(i.uid)||0))+1;
     estadoActual=draft.estado==='definitivo'?'definitivo':'borrador';
   }else{
@@ -79,12 +83,16 @@ function cargarDraft(){
   actualizarEstado();
 }
 
+function nuevoItemDesdeProducto(p,cantidad=1){
+  return {uid:itemSeq++,...p,cantidad,precioActual:Number(p.precio)||999,ivaActual:0,extra:0,dibujos:0,cuadrados:0};
+}
+
 function sumarProductoImportado(p){
   if(!p||!p.id)return;
   const existente=items.find(i=>i.id===p.id);
   const cantidadAgregar=Number(p.cantidad||1);
   if(existente) existente.cantidad=Number(existente.cantidad||0)+cantidadAgregar;
-  else items.push({uid:itemSeq++,...p,cantidad:cantidadAgregar,precioActual:Number(p.precio)||999,ivaActual:0,extra:0});
+  else items.push(nuevoItemDesdeProducto(p,cantidadAgregar));
 }
 function importarProductosPendientes(){
   let huboCambios=false;
@@ -117,10 +125,18 @@ function agregar(id){
   const p=catalogo.find(x=>x.id===id);if(!p)return;
   const existente=items.find(i=>i.id===id);
   if(existente) existente.cantidad=Number(existente.cantidad||0)+1;
-  else items.push({uid:itemSeq++,...p,cantidad:1,precioActual:Number(p.precio)||999,ivaActual:0,extra:0});
+  else items.push(nuevoItemDesdeProducto(p,1));
   buscar.value='';resultados.classList.remove('open');marcarComoBorrador();render();guardarDraft();
 }
-function calcItem(i){return (Number(i.cantidad)||0)*(Number(i.precioActual)||0)*(1+Number(i.extra||0));}
+
+function calcItem(i){
+  const cantidad=Number(i.cantidad)||0;
+  const base=cantidad*(Number(i.precioActual)||0)*(1+Number(i.extra||0));
+  if(i.tiretas){
+    return base + (Number(i.dibujos)||0)*EXTRA_DIBUJO_TIRETAS + (Number(i.cuadrados)||0)*EXTRA_CUADRADOS_TIRETAS;
+  }
+  return base;
+}
 
 function render(){
   if(!items.length){
@@ -137,16 +153,31 @@ function render(){
           <button class="remove-item js-remove" title="Quitar">×</button>
         </div>
         ${i.tranquera?`<div class="item-extra"><label>Adicional de tranquera</label><select class="control js-extra">${extrasTranquera.map(e=>`<option value="${e.factor}" ${Number(i.extra)===e.factor?'selected':''}>${e.label}</option>`).join('')}</select></div>`:''}
+        ${i.tiretas?`
+          <div class="item-extra tiretas-extra">
+            <label>Adicionales de tiretas</label>
+            <div style="display:grid;grid-template-columns:1fr 110px;gap:8px;width:100%;align-items:center;">
+              <span>Dibujo artístico por hoja · ${dinero(EXTRA_DIBUJO_TIRETAS)} c/u</span>
+              <input class="control js-dibujos" type="number" min="0" step="1" value="${Number(i.dibujos)||0}" title="Cantidad de hojas con dibujo artístico">
+              <span>Cuadrados · ${dinero(EXTRA_CUADRADOS_TIRETAS)} c/u</span>
+              <input class="control js-cuadrados" type="number" min="0" step="1" value="${Number(i.cuadrados)||0}" title="Cantidad de cuadrados">
+            </div>
+          </div>`:''}
         ${i.pendiente?'<div class="pending-line">⚠ Este producto estaba sin precio en el Excel original. El valor $999 es provisorio: podés corregirlo directamente en este presupuesto.</div>':''}
       </div>`).join('');
 
     contenedor.querySelectorAll('.quote-item').forEach(el=>{
       const uid=Number(el.dataset.uid);const item=items.find(x=>x.uid===uid);
-      el.querySelector('.js-cantidad').addEventListener('input',e=>{item.cantidad=Number(e.target.value);marcarComoBorrador();actualizarTotalesSinRender();el.querySelector('.item-total strong').textContent=dinero(calcItem(item));guardarDraft();});
-      el.querySelector('.js-precio').addEventListener('input',e=>{item.precioActual=Number(e.target.value);item.pendiente=item.precioActual===999;marcarComoBorrador();actualizarTotalesSinRender();el.querySelector('.item-total strong').textContent=dinero(calcItem(item));guardarDraft();});
+      const refrescarItem=()=>{marcarComoBorrador();actualizarTotalesSinRender();el.querySelector('.item-total strong').textContent=dinero(calcItem(item));guardarDraft();};
+      el.querySelector('.js-cantidad').addEventListener('input',e=>{item.cantidad=Number(e.target.value);refrescarItem();});
+      el.querySelector('.js-precio').addEventListener('input',e=>{item.precioActual=Number(e.target.value);item.pendiente=item.precioActual===999;refrescarItem();});
       el.querySelector('.js-iva').addEventListener('change',e=>{item.ivaActual=Number(e.target.value);marcarComoBorrador();actualizarTotalesSinRender();guardarDraft();});
       const extra=el.querySelector('.js-extra');
-      if(extra)extra.addEventListener('change',e=>{item.extra=Number(e.target.value);marcarComoBorrador();actualizarTotalesSinRender();el.querySelector('.item-total strong').textContent=dinero(calcItem(item));guardarDraft();});
+      if(extra)extra.addEventListener('change',e=>{item.extra=Number(e.target.value);refrescarItem();});
+      const dibujos=el.querySelector('.js-dibujos');
+      if(dibujos)dibujos.addEventListener('input',e=>{item.dibujos=Math.max(0,Number(e.target.value)||0);refrescarItem();});
+      const cuadrados=el.querySelector('.js-cuadrados');
+      if(cuadrados)cuadrados.addEventListener('input',e=>{item.cuadrados=Math.max(0,Number(e.target.value)||0);refrescarItem();});
       el.querySelector('.js-remove').addEventListener('click',()=>{items=items.filter(x=>x.uid!==uid);marcarComoBorrador();render();guardarDraft();});
     });
   }
