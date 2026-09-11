@@ -284,11 +284,6 @@ window.addEventListener('focus',()=>{cargarClientes();actualizarAyudaCliente();i
 
 document.getElementById('guardarBorrador').addEventListener('click',()=>{estadoActual='borrador';actualizarEstado();guardarDraft();alert('Presupuesto guardado como borrador.');});
 document.getElementById('guardarDefinitivo').addEventListener('click',guardarDefinitivo);
-document.getElementById('generarPdf').addEventListener('click',()=>{
-  if(!items.length){alert('Agregá al menos un producto antes de exportar el PDF.');return;}
-  if(items.some(i=>i.pendiente||Number(i.precioActual)===999)&&!confirm('Hay productos con precio pendiente. ¿Querés continuar igualmente?'))return;
-  alert('La exportación PDF es el siguiente módulo a conectar. El presupuesto ya conserva productos, IVA, adicionales y estado.');
-});
 
 cargarClientes();
 cargarDraft();
