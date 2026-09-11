@@ -1,13 +1,13 @@
 const catalogo = [
-  {id:'P0002',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,20 m',unidad:'unidad',precio:49900,iva:21,pendiente:false},
-  {id:'P0003',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,40 m',unidad:'unidad',precio:53900,iva:21,pendiente:false},
-  {id:'P0044',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,20 m',unidad:'unidad',precio:2560,iva:21,pendiente:false},
-  {id:'P0045',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,40 m',unidad:'unidad',precio:3170,iva:21,pendiente:false},
-  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:10.5,pendiente:false},
-  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:21,pendiente:false,tranquera:true},
-  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:21,pendiente:false,tranquera:true},
-  {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:21,pendiente:true},
-  {id:'P0119',categoria:'Alambres',producto:'Alambre de manea',variante:'',medida:'',unidad:'kg',precio:999,iva:21,pendiente:true}
+  {id:'P0002',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,20 m',unidad:'unidad',precio:49900,iva:0,pendiente:false},
+  {id:'P0003',categoria:'Postes de quebracho',producto:'Entero',variante:'Colorado',medida:'2,40 m',unidad:'unidad',precio:53900,iva:0,pendiente:false},
+  {id:'P0044',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,20 m',unidad:'unidad',precio:2560,iva:0,pendiente:false},
+  {id:'P0045',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,40 m',unidad:'unidad',precio:3170,iva:0,pendiente:false},
+  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:0,pendiente:false},
+  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:0,pendiente:false,tranquera:true},
+  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:0,pendiente:false,tranquera:true},
+  {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:0,pendiente:true},
+  {id:'P0119',categoria:'Alambres',producto:'Alambre de manea',variante:'',medida:'',unidad:'kg',precio:999,iva:0,pendiente:true}
 ];
 
 const extrasTranquera = [
@@ -77,7 +77,7 @@ function sumarProductoImportado(p){
   const existente = items.find(i=>i.id===p.id);
   const cantidadAgregar = Number(p.cantidad||1);
   if(existente) existente.cantidad = Number(existente.cantidad||0) + cantidadAgregar;
-  else items.push({uid:itemSeq++,...p,cantidad:cantidadAgregar,precioActual:Number(p.precio)||999,ivaActual:Number(p.iva)||0,extra:0});
+  else items.push({uid:itemSeq++,...p,cantidad:cantidadAgregar,precioActual:Number(p.precio)||999,ivaActual:0,extra:0});
 }
 
 function importarProductosPendientes(){
@@ -113,7 +113,7 @@ function buscarProductos(){
     resultados.innerHTML = lista.map(p=>`
       <div class="product-option" data-id="${p.id}">
         <div><strong>${descripcion(p)}</strong><small>${p.categoria} · ${p.unidad}${p.pendiente?' · Precio pendiente':''}</small></div>
-        <div class="product-option-price">${dinero(p.precio)}<small>IVA ficha ${String(p.iva).replace('.',',')}%</small></div>
+        <div class="product-option-price">${dinero(p.precio)}<small>Sin IVA</small></div>
       </div>`).join('');
   }
   resultados.classList.add('open');
@@ -125,7 +125,7 @@ function agregar(id){
   if(!p) return;
   const existente=items.find(i=>i.id===id);
   if(existente) existente.cantidad=Number(existente.cantidad||0)+1;
-  else items.push({uid:itemSeq++,...p,cantidad:1,precioActual:p.precio,ivaActual:p.iva,extra:0});
+  else items.push({uid:itemSeq++,...p,cantidad:1,precioActual:p.precio,ivaActual:0,extra:0});
   buscar.value=''; resultados.classList.remove('open');
   render(); guardarDraft();
 }
