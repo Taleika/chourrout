@@ -35,6 +35,14 @@
         <a class="btn btn-light" href="presupuestos/nuevo.html?nuevo=1">＋ Nuevo presupuesto</a>
       </section>
 
+      <div class="section-head"><div><h3>Accesos rápidos</h3><p>Todo lo necesario para trabajar desde un solo lugar.</p></div></div>
+      <section class="cards">
+        <a class="card" href="presupuestos/historial.html"><div class="card-icon">▤</div><h4>Presupuestos</h4><p>Consultar presupuestos anteriores, duplicarlos o volver a generar el PDF.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/productos.html"><div class="card-icon">▦</div><h4>Lista de productos</h4><p>Administrar productos, precios, IVA, medidas y disponibilidad.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/clientes.html"><div class="card-icon">♙</div><h4>Clientes</h4><p>Guardar datos de clientes y consultar su historial de presupuestos.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/configuracion.html"><div class="card-icon">⚙</div><h4>Configuración</h4><p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p><div class="card-arrow">→</div></a>
+      </section>
+
       <div class="section-head"><div><h3>Resumen general</h3><p>Datos reales sincronizados con Firebase.</p></div><span class="dashboard-status" id="dashboardEstado">Cargando datos...</span></div>
       <section class="dashboard-grid">
         <div class="dash-card"><span>Productos</span><strong id="dashProductos">—</strong><small>Artículos en la base</small></div>
@@ -48,14 +56,6 @@
       <section class="dashboard-panel">
         <div class="panel-head"><div><h3>Últimos presupuestos</h3><p>Los cinco movimientos más recientes.</p></div><a class="btn btn-outline" href="presupuestos/historial.html">Ver historial</a></div>
         <div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th></tr></thead><tbody id="ultimosPresupuestos"><tr><td colspan="5" class="muted" style="padding:18px">Cargando...</td></tr></tbody></table></div>
-      </section>
-
-      <div class="section-head"><div><h3>Accesos rápidos</h3><p>Todo lo necesario para trabajar desde un solo lugar.</p></div></div>
-      <section class="cards">
-        <a class="card" href="presupuestos/historial.html"><div class="card-icon">▤</div><h4>Presupuestos</h4><p>Consultar presupuestos anteriores, duplicarlos o volver a generar el PDF.</p><div class="card-arrow">→</div></a>
-        <a class="card" href="admin/productos.html"><div class="card-icon">▦</div><h4>Lista de productos</h4><p>Administrar productos, precios, IVA, medidas y disponibilidad.</p><div class="card-arrow">→</div></a>
-        <a class="card" href="admin/clientes.html"><div class="card-icon">♙</div><h4>Clientes</h4><p>Guardar datos de clientes y consultar su historial de presupuestos.</p><div class="card-arrow">→</div></a>
-        <a class="card" href="admin/configuracion.html"><div class="card-icon">⚙</div><h4>Configuración</h4><p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p><div class="card-arrow">→</div></a>
       </section>
     </main>
   </div>
