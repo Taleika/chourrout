@@ -48,11 +48,15 @@
           </section>
 
           <section class="budget-card product-picker">
-            <div class="budget-card-head"><div><span class="step">2</span><h3>Agregar productos</h3></div><span class="muted">Buscá por nombre, categoría o medida</span></div>
+            <div class="budget-card-head">
+              <div><span class="step">2</span><h3>Agregar productos</h3></div>
+              <a class="btn btn-outline btn-compact" href="../admin/productos.html" target="_blank">Ver lista completa</a>
+            </div>
             <div class="search-wrap">
               <input id="buscarProducto" class="control search-product" type="search" placeholder="Ej: tranquera 4 m, varilla curupay, poste 2,20..." autocomplete="off">
               <div class="product-results" id="resultadosProducto"></div>
             </div>
+            <small class="picker-help">Podés abrir la lista completa en otra pestaña y agregar productos al presupuesto actual sin perder lo que ya cargaste.</small>
           </section>
 
           <section class="budget-card">
@@ -74,12 +78,13 @@
 
             <div class="global-iva">
               <label>IVA del presupuesto</label>
-              <select id="ivaGlobal" class="control">
+              <select id="ivaGlobal" class="control control-compact">
+                <option value="0" selected>Sin IVA</option>
                 <option value="individual">Según cada producto</option>
-                <option value="21">Aplicar 21% a todos</option>
-                <option value="10.5">Aplicar 10,5% a todos</option>
+                <option value="21">21% a todos</option>
+                <option value="10.5">10,5% a todos</option>
               </select>
-              <small>Este cambio no modifica la ficha del producto.</small>
+              <small>No modifica el IVA guardado en la ficha del producto.</small>
             </div>
 
             <div class="summary-lines">
@@ -95,7 +100,7 @@
               <button class="btn btn-outline" id="guardarBorrador">Guardar borrador</button>
               <button class="btn btn-primary" id="generarPdf">Generar PDF</button>
             </div>
-            <p class="prototype-note">Versión de prueba: todavía no guarda en Firebase ni genera el PDF definitivo.</p>
+            <p class="prototype-note">El presupuesto se conserva automáticamente en este navegador mientras seguimos desarrollando Firebase.</p>
           </div>
         </aside>
       </section>
