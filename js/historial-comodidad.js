@@ -3,6 +3,7 @@
   const desde=document.getElementById('filtroDesde');
   const hasta=document.getElementById('filtroHasta');
   const contador=document.getElementById('contadorPresupuestos');
+  const limpiar=document.getElementById('mostrarTodos');
   if(!tabla||!desde||!hasta)return;
 
   function fechaIsoDesdeTexto(texto){
@@ -41,6 +42,7 @@
   function refrescar(){mejorarAcciones();aplicarFechas();}
   desde.addEventListener('change',refrescar);
   hasta.addEventListener('change',refrescar);
+  limpiar?.addEventListener('click',()=>{desde.value='';hasta.value='';setTimeout(refrescar,0);});
   new MutationObserver(()=>requestAnimationFrame(refrescar)).observe(tabla,{childList:true,subtree:true});
   setTimeout(refrescar,250);
 })();
