@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes | Chourrout Hnos.</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
+    <nav class="menu">
+      <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
+      <a class="menu-item" href="../presupuestos/nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+      <a class="menu-item" href="../presupuestos/historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
+      <a class="menu-item" href="productos.html"><span class="menu-icon">▦</span>Productos</a>
+      <a class="menu-item active" href="clientes.html"><span class="menu-icon">♙</span>Clientes</a>
+      <a class="menu-item" href="configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
+    </nav>
+    <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="welcome"><span class="eyebrow">Administración</span><h1>Clientes</h1><p>Guardá los datos habituales para reutilizarlos en futuros presupuestos.</p></div>
+      <button class="btn btn-primary" id="nuevoCliente">＋ Nuevo cliente</button>
+    </div>
+    <div class="toolbar"><input id="buscarCliente" class="control" type="search" placeholder="Buscar por nombre, CUIT o teléfono..."><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
+    <section class="panel">
+      <div class="table-wrap"><table><thead><tr><th>Nombre / Razón social</th><th>CUIT</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr></thead><tbody id="tablaClientes"></tbody></table></div>
+      <div class="pagination"><span id="contadorClientes">0 clientes</span></div>
+    </section>
+  </main>
+</div>
+<div class="modal-backdrop" id="modalCliente">
+  <div class="modal">
+    <div class="modal-head"><h3 id="tituloCliente">Nuevo cliente</h3><button class="icon-btn" id="cerrarCliente">✕</button></div>
+    <div class="modal-body"><div class="modal-grid">
+      <div class="field full"><label>Nombre / Razón social</label><input class="control" id="cNombre"></div>
+      <div class="field"><label>CUIT</label><input class="control" id="cCuit"></div>
+      <div class="field"><label>Teléfono</label><input class="control" id="cTelefono"></div>
+      <div class="field full"><label>Email</label><input class="control" id="cEmail" type="email"></div>
+      <div class="field full"><label>Observaciones</label><input class="control" id="cObservaciones"></div>
+    </div></div>
+    <div class="modal-foot"><button class="btn btn-outline" id="cancelarCliente">Cancelar</button><button class="btn btn-primary" id="guardarCliente">Guardar cliente</button></div>
+  </div>
+</div>
+<script src="../js/clientes.js"></script>
+</body>
+</html>
