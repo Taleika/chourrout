@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuración | Chourrout Hnos.</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    .config-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}.config-card{background:#fff;border:1px solid #e6e6e6;border-radius:16px;padding:20px}.config-card h3{margin:0 0 5px}.config-card p{margin:0 0 18px;color:#777}.config-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.config-fields .full{grid-column:1/-1}.config-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.saved-state{font-size:13px;color:#666;margin-right:auto;align-self:center}.preview{background:#f7f7f7;border-radius:12px;padding:16px;line-height:1.65}.preview strong{display:block;margin-bottom:7px}.preview small{color:#777}.textarea{min-height:95px;resize:vertical}.hint{font-size:12px;color:#888;margin-top:5px}@media(max-width:900px){.config-grid{grid-template-columns:1fr}.config-fields{grid-template-columns:1fr}.config-fields .full{grid-column:auto}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
+    <nav class="menu">
+      <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
+      <a class="menu-item" href="../presupuestos/nuevo.html?nuevo=1"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+      <a class="menu-item" href="../presupuestos/historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
+      <a class="menu-item" href="productos.html"><span class="menu-icon">▦</span>Productos</a>
+      <a class="menu-item" href="clientes.html"><span class="menu-icon">♙</span>Clientes</a>
+      <a class="menu-item active" href="configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
+    </nav>
+    <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="welcome"><span class="eyebrow">Administración</span><h1>Configuración</h1><p>Datos generales que se comparten entre las dos cuentas del sistema.</p></div>
+    </div>
+
+    <div class="config-grid">
+      <section class="config-card">
+        <h3>Datos de la empresa</h3>
+        <p>Se guardan en Firebase y quedan disponibles desde cualquier equipo.</p>
+        <div class="config-fields">
+          <div class="field full"><label>Razón social</label><input class="control" id="empresaNombre"></div>
+          <div class="field"><label>Dirección</label><input class="control" id="empresaDireccion"></div>
+          <div class="field"><label>Localidad</label><input class="control" id="empresaLocalidad"></div>
+          <div class="field"><label>Teléfono</label><input class="control" id="empresaTelefono"></div>
+          <div class="field"><label>CUIT de la empresa</label><input class="control" id="empresaCuit" placeholder="Opcional"></div>
+          <div class="field"><label>Email</label><input class="control" id="empresaEmail" type="email" placeholder="Opcional"></div>
+          <div class="field"><label>Validez del presupuesto</label><input class="control" id="validezDias" type="number" min="0" step="1"></div>
+          <div class="field"><label>IVA por defecto</label><select class="control" id="ivaPorDefecto"><option value="0">Sin IVA</option><option value="individual">Según cada producto</option><option value="21">21%</option><option value="10.5">10,5%</option></select></div>
+          <div class="field full"><label>Observaciones por defecto</label><textarea class="control textarea" id="observacionesDefault"></textarea><div class="hint">Se completan automáticamente en cada presupuesto nuevo y después se pueden editar.</div></div>
+        </div>
+        <div class="config-actions"><span class="saved-state" id="estadoGuardado"></span><button class="btn btn-outline" id="restaurar">Restaurar valores iniciales</button><button class="btn btn-primary" id="guardarConfig">Guardar configuración</button></div>
+      </section>
+
+      <section class="config-card">
+        <h3>Vista previa</h3>
+        <p>Así quedarán los datos generales que utilizará el sistema.</p>
+        <div class="preview" id="previewConfig"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<script type="module" src="../js/configuracion.js"></script>
+<script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
+</body>
+</html>
