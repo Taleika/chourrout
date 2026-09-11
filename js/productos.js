@@ -1,7 +1,17 @@
-const productos = Array.isArray(window.CH_PRODUCTOS) ? window.CH_PRODUCTOS.map(p=>({...p,iva:'Sin IVA'})) : [];
-
 const DRAFT_KEY = 'chourrout_presupuesto_actual';
 const ADD_QUEUE_KEY = 'chourrout_productos_para_agregar';
+const DELETED_PRODUCTS_KEY = 'chourrout_productos_eliminados';
+
+function leerJson(key, fallback){
+  try{ const value=JSON.parse(localStorage.getItem(key)||'null'); return value ?? fallback; }
+  catch(e){ return fallback; }
+}
+
+const eliminadosIniciales = new Set(leerJson(DELETED_PRODUCTS_KEY,[]));
+const productos = Array.isArray(window.CH_PRODUCTOS)
+  ? window.CH_PRODUCTOS.filter(p=>!eliminadosIniciales.has(p.id)).map(p=>({...p,iva:'Sin IVA'}))
+  : [];
+
 const tabla = document.getElementById('tablaProductos');
 const buscar = document.getElementById('buscar');
 const categoria = document.getElementById('categoria');
@@ -12,11 +22,6 @@ let editando = null;
 
 function dinero(valor){
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(valor);
-}
-
-function leerJson(key, fallback){
-  try{ const value=JSON.parse(localStorage.getItem(key)||'null'); return value ?? fallback; }
-  catch(e){ return fallback; }
 }
 
 function cantidadItemsActuales(){
@@ -34,8 +39,10 @@ function actualizarBotonVolver(){
 }
 
 function cargarCategorias(){
+  const valorActual=categoria.value;
   const categorias=[...new Set(productos.map(p=>p.categoria).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
   categoria.innerHTML='<option value="">Todas las categorías</option>'+categorias.map(c=>`<option>${c}</option>`).join('');
+  if(categorias.includes(valorActual)) categoria.value=valorActual;
 }
 
 function actualizarEstadisticas(){
@@ -58,7 +65,7 @@ function render(lista=productos){
       <td class="money">${dinero(p.precio)} ${p.pendiente?'<span class="badge badge-pending">Pendiente</span>':''}</td>
       <td><span class="badge badge-iva">${p.iva||'Sin IVA'}</span></td>
       <td><span class="badge badge-ok">${p.estado}</span></td>
-      <td><div class="actions"><button class="icon-btn" onclick="agregarAPresupuesto('${p.id}')">+ Presupuesto</button><button class="icon-btn" onclick="editar('${p.id}')">Editar</button></div></td>`;
+      <td><div class="actions"><button class="icon-btn" onclick="agregarAPresupuesto('${p.id}')">+ Presupuesto</button><button class="icon-btn" onclick="editar('${p.id}')">Editar</button><button class="icon-btn" onclick="eliminarProducto('${p.id}')">Eliminar</button></div></td>`;
     tabla.appendChild(tr);
   });
   contador.textContent=`Mostrando ${lista.length} de ${productos.length} productos`;
@@ -75,7 +82,7 @@ function filtrar(){
 
 window.agregarAPresupuesto=function(id){
   const p=productos.find(x=>x.id===id); if(!p) return;
-  const payload={id:p.id,categoria:p.categoria,producto:p.producto,variante:p.variante||'',medida:p.medida||'',unidad:p.unidad,precio:Number(p.precio)||999,iva:0,pendiente:Boolean(p.pendiente),tranquera:Boolean(p.tranquera)};
+  const payload={id:p.id,categoria:p.categoria,producto:p.producto,variante:p.variante||'',medida:p.medida||'',unidad:p.unidad,precio:Number(p.precio)||999,iva:0,pendiente:Boolean(p.pendiente),tranquera:Boolean(p.tranquera),tiretas:Boolean(p.tiretas)};
   const cola=leerJson(ADD_QUEUE_KEY,[]);
   const lista=Array.isArray(cola)?cola:[];
   const existente=lista.find(x=>x.id===payload.id);
@@ -84,6 +91,19 @@ window.agregarAPresupuesto=function(id){
   actualizarBotonVolver();
   const boton=[...document.querySelectorAll('.icon-btn')].find(b=>b.getAttribute('onclick')===`agregarAPresupuesto('${p.id}')`);
   if(boton){const original=boton.textContent;boton.textContent='✓ Agregado';boton.style.borderColor='#111';boton.style.background='#111';boton.style.color='#fff';setTimeout(()=>{boton.textContent=original;boton.removeAttribute('style');},900);}
+};
+
+window.eliminarProducto=function(id){
+  const p=productos.find(x=>x.id===id); if(!p) return;
+  if(!confirm(`¿Eliminar ${p.producto}${p.medida?` · ${p.medida}`:''} de la lista de productos?\n\nLos presupuestos ya guardados no se modifican.`)) return;
+  const idx=productos.findIndex(x=>x.id===id);
+  if(idx>=0) productos.splice(idx,1);
+  const eliminados=new Set(leerJson(DELETED_PRODUCTS_KEY,[]));
+  eliminados.add(id);
+  localStorage.setItem(DELETED_PRODUCTS_KEY,JSON.stringify([...eliminados]));
+  cargarCategorias();
+  actualizarEstadisticas();
+  filtrar();
 };
 
 function abrirModal(){modal.classList.add('open');}
