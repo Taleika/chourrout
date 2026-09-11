@@ -74,7 +74,10 @@
 
         <aside class="budget-summary">
           <div class="summary-card sticky-summary">
-            <div class="summary-title"><span>Resumen</span><span class="badge badge-iva">ARS</span></div>
+            <div class="summary-title">
+              <span>Resumen</span>
+              <span class="budget-status status-draft" id="estadoPresupuesto">Borrador</span>
+            </div>
 
             <div class="global-iva">
               <label>IVA del presupuesto</label>
@@ -98,9 +101,10 @@
 
             <div class="summary-actions">
               <button class="btn btn-outline" id="guardarBorrador">Guardar borrador</button>
-              <button class="btn btn-primary" id="generarPdf">Generar PDF</button>
+              <button class="btn btn-primary" id="guardarDefinitivo">Guardar definitivo</button>
+              <button class="btn btn-outline" id="generarPdf">Exportar PDF</button>
             </div>
-            <p class="prototype-note">El presupuesto se conserva automáticamente en este navegador mientras seguimos desarrollando Firebase.</p>
+            <p class="prototype-note">Por ahora el guardado es local en este navegador. Cuando conectemos Firebase, borradores y definitivos quedarán disponibles desde cualquier equipo.</p>
           </div>
         </aside>
       </section>
