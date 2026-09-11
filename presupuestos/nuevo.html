@@ -30,9 +30,17 @@
 
       <section class="budget-grid">
         <div class="budget-main">
-          <section class="budget-card">
-            <div class="budget-card-head"><div><span class="step">1</span><h3>Cliente</h3></div><span class="muted">Datos del destinatario</span></div>
-            <div class="client-grid">
+          <section class="budget-card client-picker">
+            <div class="budget-card-head">
+              <div><span class="step">1</span><h3>Cliente</h3></div>
+              <a class="btn btn-outline btn-compact" href="../admin/clientes.html" target="_blank">＋ Agregar / administrar clientes</a>
+            </div>
+            <div class="search-wrap" style="margin-bottom:14px;">
+              <input id="buscarClientePresupuesto" class="control" type="search" placeholder="Buscar cliente guardado por nombre, CUIT o teléfono..." autocomplete="off">
+              <div class="product-results" id="resultadosCliente"></div>
+            </div>
+            <small class="picker-help" id="ayudaCliente">Seleccioná un cliente guardado o completá los datos manualmente.</small>
+            <div class="client-grid" style="margin-top:14px;">
               <div class="field"><label>Nombre / Razón social</label><input class="control" id="clienteNombre" placeholder="Ej: Nicolás Tosca"></div>
               <div class="field"><label>CUIT</label><input class="control" id="clienteCuit" placeholder="Opcional"></div>
               <div class="field"><label>Teléfono</label><input class="control" id="clienteTelefono" placeholder="Opcional"></div>
@@ -42,7 +50,7 @@
 
           <section class="budget-card product-picker">
             <div class="budget-card-head"><div><span class="step">2</span><h3>Agregar productos</h3></div><a class="btn btn-outline btn-compact" href="../admin/productos.html" target="_blank">Ver lista completa</a></div>
-            <div class="search-wrap"><input id="buscarProducto" class="control search-product" type="search" placeholder="Buscar entre 128 productos: tranquera, poste, varilla, medida..." autocomplete="off"><div class="product-results" id="resultadosProducto"></div></div>
+            <div class="search-wrap"><input id="buscarProducto" class="control search-product" type="search" placeholder="Buscar productos: tranquera, poste, varilla, medida..." autocomplete="off"><div class="product-results" id="resultadosProducto"></div></div>
             <small class="picker-help">La búsqueda usa la base maestra completa. También podés abrir la lista en otra pestaña y agregar varios productos al presupuesto actual.</small>
           </section>
 
