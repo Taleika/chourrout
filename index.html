@@ -6,7 +6,7 @@
   <title>Chourrout Hnos. | Presupuestos</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .dashboard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.dash-card{background:#fff;border:1px solid #e7e7e7;border-radius:14px;padding:16px 18px}.dash-card span{display:block;color:#777;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.dash-card strong{display:block;font-size:28px;margin-top:5px}.dash-card small{display:block;color:#888;margin-top:4px}.dashboard-panel{background:#fff;border:1px solid #e7e7e7;border-radius:14px;overflow:hidden}.dashboard-panel .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid #eee}.dashboard-panel .panel-head h3{margin:0}.dashboard-panel .panel-head p{margin:3px 0 0;color:#777}.dashboard-status{font-size:12px;color:#777}.badge-draft{background:#fff3cd;color:#7b5b00}@media(max-width:900px){.dashboard-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.dashboard-grid{grid-template-columns:1fr}}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.dash-card{background:#fff;border:1px solid #e7e7e7;border-radius:14px;padding:16px 18px;text-decoration:none;color:inherit;transition:.18s ease}.dash-card[href]:hover{transform:translateY(-2px);border-color:#cfcfcf;box-shadow:0 8px 22px rgba(0,0,0,.06)}.dash-card span{display:block;color:#777;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.dash-card strong{display:block;font-size:28px;margin-top:5px}.dash-card small{display:block;color:#888;margin-top:4px}.dashboard-panel{background:#fff;border:1px solid #e7e7e7;border-radius:14px;overflow:hidden}.dashboard-panel .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid #eee}.dashboard-panel .panel-head h3{margin:0}.dashboard-panel .panel-head p{margin:3px 0 0;color:#777}.dashboard-status{font-size:12px;color:#777}.badge-draft{background:#fff3cd;color:#7b5b00}.hero-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.btn-continue{background:#fff;color:#111;border:1px solid rgba(255,255,255,.7)}.btn-continue:hover{background:#f5f5f5}.last-draft-note{font-size:11px;opacity:.82;margin-top:5px}.budget-open{font-size:11px;font-weight:800;text-decoration:none;color:#111;white-space:nowrap}.budget-open:hover{color:#ef1616}@media(max-width:900px){.dashboard-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.dashboard-grid{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}}
   </style>
 </head>
 <body>
@@ -31,8 +31,11 @@
       </div>
 
       <section class="hero">
-        <div class="hero-copy"><span class="eyebrow">Presupuestos</span><h2>Crear un nuevo presupuesto</h2><p>Seleccioná el cliente, agregá productos, definí cantidades, IVA y adicionales. El sistema calculará automáticamente cada total.</p></div>
-        <a class="btn btn-light" href="presupuestos/nuevo.html?nuevo=1">＋ Nuevo presupuesto</a>
+        <div class="hero-copy"><span class="eyebrow">Presupuestos</span><h2>Crear un nuevo presupuesto</h2><p>Seleccioná el cliente, agregá productos, definí cantidades, IVA y adicionales. El sistema calculará automáticamente cada total.</p><div class="last-draft-note" id="ultimoBorradorTexto" hidden></div></div>
+        <div class="hero-actions">
+          <button class="btn btn-continue" id="continuarUltimo" type="button" hidden>↩ Continuar último presupuesto</button>
+          <a class="btn btn-light" href="presupuestos/nuevo.html?nuevo=1">＋ Nuevo presupuesto</a>
+        </div>
       </section>
 
       <div class="section-head"><div><h3>Accesos rápidos</h3><p>Todo lo necesario para trabajar desde un solo lugar.</p></div></div>
@@ -43,23 +46,23 @@
         <a class="card" href="admin/configuracion.html"><div class="card-icon">⚙</div><h4>Configuración</h4><p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p><div class="card-arrow">→</div></a>
       </section>
 
-      <div class="section-head"><div><h3>Resumen general</h3><p>Datos reales sincronizados con Firebase.</p></div><span class="dashboard-status" id="dashboardEstado">Cargando datos...</span></div>
+      <div class="section-head"><div><h3>Resumen general</h3><p>Datos reales sincronizados con Firebase. Los cuadros funcionan también como accesos directos.</p></div><span class="dashboard-status" id="dashboardEstado">Cargando datos...</span></div>
       <section class="dashboard-grid">
-        <div class="dash-card"><span>Productos</span><strong id="dashProductos">—</strong><small>Artículos en la base</small></div>
-        <div class="dash-card"><span>Precios pendientes</span><strong id="dashPendientes">—</strong><small>Productos a revisar</small></div>
-        <div class="dash-card"><span>Clientes</span><strong id="dashClientes">—</strong><small>Clientes cargados</small></div>
-        <div class="dash-card"><span>Definitivos</span><strong id="dashDefinitivos">—</strong><small>Presupuestos cerrados</small></div>
-        <div class="dash-card"><span>Borradores</span><strong id="dashBorradores">—</strong><small>Presupuestos activos</small></div>
-        <div class="dash-card"><span>Total presupuestado</span><strong id="dashTotal">—</strong><small>Suma de presupuestos definitivos</small></div>
+        <a class="dash-card" href="admin/productos.html"><span>Productos</span><strong id="dashProductos">—</strong><small>Artículos en la base</small></a>
+        <a class="dash-card" href="admin/productos.html"><span>Precios pendientes</span><strong id="dashPendientes">—</strong><small>Productos a revisar</small></a>
+        <a class="dash-card" href="admin/clientes.html"><span>Clientes</span><strong id="dashClientes">—</strong><small>Clientes cargados</small></a>
+        <a class="dash-card" href="presupuestos/historial.html?estado=definitivo"><span>Definitivos</span><strong id="dashDefinitivos">—</strong><small>Presupuestos cerrados</small></a>
+        <a class="dash-card" href="presupuestos/historial.html?estado=borrador"><span>Borradores</span><strong id="dashBorradores">—</strong><small>Presupuestos activos</small></a>
+        <a class="dash-card" href="presupuestos/historial.html?estado=definitivo"><span>Total presupuestado</span><strong id="dashTotal">—</strong><small>Suma de presupuestos definitivos</small></a>
       </section>
 
       <section class="dashboard-panel">
         <div class="panel-head"><div><h3>Últimos presupuestos</h3><p>Los cinco movimientos más recientes.</p></div><a class="btn btn-outline" href="presupuestos/historial.html">Ver historial</a></div>
-        <div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th></tr></thead><tbody id="ultimosPresupuestos"><tr><td colspan="5" class="muted" style="padding:18px">Cargando...</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th><th></th></tr></thead><tbody id="ultimosPresupuestos"><tr><td colspan="6" class="muted" style="padding:18px">Cargando...</td></tr></tbody></table></div>
       </section>
     </main>
   </div>
-  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/dashboard.js?v=20260911-1344"></script>
   <script type="module">import { protegerPagina } from './js/auth.js'; protegerPagina();</script>
 </body>
 </html>
