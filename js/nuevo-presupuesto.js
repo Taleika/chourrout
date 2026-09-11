@@ -20,6 +20,7 @@ const extrasTranquera = [
 
 const DRAFT_KEY = 'chourrout_presupuesto_actual';
 const PENDING_ADD_KEY = 'chourrout_producto_para_agregar';
+const ADD_QUEUE_KEY = 'chourrout_productos_para_agregar';
 let items = [];
 let itemSeq = 1;
 const buscar = document.getElementById('buscarProducto');
@@ -71,15 +72,35 @@ function cargarDraft(){
   }
 }
 
-function importarProductoPendiente(){
-  let p=null;
-  try{ p=JSON.parse(localStorage.getItem(PENDING_ADD_KEY)||'null'); }catch(e){}
-  if(!p) return;
-  localStorage.removeItem(PENDING_ADD_KEY);
+function sumarProductoImportado(p){
+  if(!p || !p.id) return;
   const existente = items.find(i=>i.id===p.id);
-  if(existente) existente.cantidad = Number(existente.cantidad||0)+1;
-  else items.push({uid:itemSeq++,...p,cantidad:1,precioActual:Number(p.precio)||999,ivaActual:Number(p.iva)||0,extra:0});
-  guardarDraft();
+  const cantidadAgregar = Number(p.cantidad||1);
+  if(existente) existente.cantidad = Number(existente.cantidad||0) + cantidadAgregar;
+  else items.push({uid:itemSeq++,...p,cantidad:cantidadAgregar,precioActual:Number(p.precio)||999,ivaActual:Number(p.iva)||0,extra:0});
+}
+
+function importarProductosPendientes(){
+  let huboCambios=false;
+
+  let cola=[];
+  try{ cola=JSON.parse(localStorage.getItem(ADD_QUEUE_KEY)||'[]'); }catch(e){}
+  if(Array.isArray(cola) && cola.length){
+    cola.forEach(sumarProductoImportado);
+    localStorage.removeItem(ADD_QUEUE_KEY);
+    huboCambios=true;
+  }
+
+  let legado=null;
+  try{ legado=JSON.parse(localStorage.getItem(PENDING_ADD_KEY)||'null'); }catch(e){}
+  if(legado){
+    sumarProductoImportado(legado);
+    localStorage.removeItem(PENDING_ADD_KEY);
+    huboCambios=true;
+  }
+
+  if(huboCambios) guardarDraft();
+  return huboCambios;
 }
 
 function buscarProductos(){
@@ -167,8 +188,12 @@ buscar.addEventListener('input',buscarProductos);
 document.addEventListener('click',e=>{if(!e.target.closest('.product-picker')) resultados.classList.remove('open');});
 ivaGlobal.addEventListener('change',()=>{actualizarTotalesSinRender();guardarDraft();});
 ['clienteNombre','clienteCuit','clienteTelefono','fechaPresupuesto','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',guardarDraft));
-window.addEventListener('storage',e=>{if(e.key===PENDING_ADD_KEY && e.newValue){importarProductoPendiente();render();}});
-window.addEventListener('focus',()=>{importarProductoPendiente();render();});
+window.addEventListener('storage',e=>{
+  if((e.key===ADD_QUEUE_KEY || e.key===PENDING_ADD_KEY) && e.newValue){
+    if(importarProductosPendientes()) render();
+  }
+});
+window.addEventListener('focus',()=>{if(importarProductosPendientes()) render();});
 
 document.getElementById('guardarBorrador').addEventListener('click',()=>{guardarDraft();alert('Borrador guardado localmente. Más adelante lo conectaremos con Firebase.');});
 document.getElementById('generarPdf').addEventListener('click',()=>{
@@ -178,5 +203,5 @@ document.getElementById('generarPdf').addEventListener('click',()=>{
 });
 
 cargarDraft();
-importarProductoPendiente();
+importarProductosPendientes();
 render();
