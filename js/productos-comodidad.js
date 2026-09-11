@@ -6,13 +6,21 @@
   const mostrarTodos=document.getElementById('mostrarTodos');
   if(!tabla||!estado||!precio)return;
 
+  function textoEstado(tr){
+    const badges=[...tr.querySelectorAll('.badge')];
+    const b=badges.find(x=>['activo','inactivo'].includes((x.textContent||'').trim().toLowerCase()));
+    return (b?.textContent||'').trim().toLowerCase();
+  }
+  function textoPrecio(tr){
+    return (tr.querySelector('td.money')?.textContent||'').toLowerCase();
+  }
   function aplicar(){
     let visibles=0,total=0;
     tabla.querySelectorAll('tr').forEach(tr=>{
-      if(tr.cells.length<8)return;
+      if(!tr.querySelector('[data-id]'))return;
       total++;
-      const estadoTexto=(tr.cells[7]?.textContent||'').trim().toLowerCase();
-      const precioTexto=(tr.cells[5]?.textContent||'').toLowerCase();
+      const estadoTexto=textoEstado(tr);
+      const precioTexto=textoPrecio(tr);
       const esPendiente=precioTexto.includes('pendiente')||precioTexto.includes('$ 999')||precioTexto.includes('$999');
       const okEstado=!estado.value||estadoTexto===estado.value.toLowerCase();
       const okPrecio=!precio.value||(precio.value==='pendiente'?esPendiente:!esPendiente);
