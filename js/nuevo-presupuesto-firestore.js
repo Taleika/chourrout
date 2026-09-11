@@ -206,7 +206,7 @@ function programarSync(){clearTimeout(syncTimer);syncTimer=setTimeout(sincroniza
 iniciarPresupuestoVacioSiCorresponde();
 await Promise.all([cargarCatalogoFirestore(),cargarClientesFirestore(),cargarConfiguracionGeneral()]);
 prepararBorradorConPreciosActuales();
-await import('./nuevo-presupuesto.js');
+await import('./nuevo-presupuesto.js?v=20260911-1335');
 aplicarConfiguracionANuevo();
 
 const draftInicial=leerJson(DRAFT_KEY,null);
