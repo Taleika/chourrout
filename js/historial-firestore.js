@@ -67,12 +67,17 @@ async function eliminarPresupuesto(numero){
 }
 
 function aplicarFiltroDesdeUrl(){
-  const q=new URL(location.href).searchParams.get('q');
-  if(!q)return;
+  const params=new URL(location.href).searchParams;
+  const q=params.get('q')||'';
+  const estado=params.get('estado')||'';
   const input=document.getElementById('buscarPresupuesto');
-  if(!input)return;
-  input.value=q;
-  input.dispatchEvent(new Event('input',{bubbles:true}));
+  const select=document.getElementById('filtroEstado');
+  if(input&&q)input.value=q;
+  if(select&&(estado==='borrador'||estado==='definitivo'))select.value=estado;
+  if((input&&q)||(select&&estado)){
+    (input||select)?.dispatchEvent(new Event('input',{bubbles:true}));
+    select?.dispatchEvent(new Event('change',{bubbles:true}));
+  }
 }
 
 try{
@@ -80,7 +85,7 @@ try{
   await cargarYActualizarBorradores();
 }catch(error){console.error('No se pudo sincronizar el historial con Firebase.',error);}
 
-await import('./historial.js?v=20260911-1344');
+await import('./historial.js?v=20260911-1348');
 aplicarFiltroDesdeUrl();
 agregarBotonesEliminar();
 new MutationObserver(agregarBotonesEliminar).observe(tabla,{childList:true,subtree:true});
