@@ -16,7 +16,6 @@
         </div>
         <div class="brand-subtitle">Sistema de presupuestos</div>
       </div>
-
       <nav class="menu">
         <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
         <a class="menu-item" href="../presupuestos/nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
@@ -25,12 +24,7 @@
         <a class="menu-item" href="clientes.html"><span class="menu-icon">♙</span>Clientes</a>
         <a class="menu-item" href="configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
       </nav>
-
-      <div class="sidebar-footer">
-        Chourrout Hnos. S.A.<br />
-        Ruta 205 Km 181,5<br />
-        Saladillo, Buenos Aires
-      </div>
+      <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
     </aside>
 
     <main class="main">
@@ -47,13 +41,13 @@
       </div>
 
       <div class="notice">
-        <div><strong>35 productos tienen precio pendiente.</strong> Se muestran con $999 para identificarlos y corregirlos antes de presupuestar.</div>
+        <div><strong><span id="noticePendientes">0</span> productos tienen precio pendiente.</strong> Se muestran con $999 para identificarlos y corregirlos antes de presupuestar.</div>
         <button class="btn btn-outline" id="verPendientes">Ver pendientes</button>
       </div>
 
       <section class="stats">
-        <div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value" id="totalProductos">128</div><div class="stat-note">Base maestra inicial</div></div>
-        <div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending" id="totalPendientes">35</div><div class="stat-note">Requieren revisión</div></div>
+        <div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value" id="totalProductos">0</div><div class="stat-note">Base maestra inicial</div></div>
+        <div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending" id="totalPendientes">0</div><div class="stat-note">Requieren revisión</div></div>
         <div class="stat"><div class="stat-label">IVA</div><div class="stat-value">Sin IVA</div><div class="stat-note">Opcional: 21% o 10,5%</div></div>
       </section>
 
@@ -63,71 +57,43 @@
 
       <div class="toolbar">
         <input id="buscar" class="control" type="search" placeholder="Buscar producto, medida o categoría..." />
-        <select id="categoria" class="control">
-          <option value="">Todas las categorías</option>
-          <option>Postes de quebracho</option>
-          <option>Varillas de curupay</option>
-          <option>Tablas de curupay</option>
-          <option>Tranqueras</option>
-          <option>Alambres</option>
-          <option>Torniquetas</option>
-        </select>
+        <select id="categoria" class="control"><option value="">Todas las categorías</option></select>
         <button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button>
       </div>
 
       <section class="panel">
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Categoría</th>
-                <th>Producto</th>
-                <th>Variante / medida</th>
-                <th>Unidad</th>
-                <th>Precio</th>
-                <th>IVA</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
+            <thead><tr><th>ID</th><th>Categoría</th><th>Producto</th><th>Variante / medida</th><th>Unidad</th><th>Precio</th><th>IVA</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody id="tablaProductos"></tbody>
           </table>
         </div>
-        <div class="pagination">
-          <span id="contadorFilas">Mostrando productos de ejemplo</span>
-          <div class="page-actions"><button class="page-btn">‹</button><button class="page-btn">1</button><button class="page-btn">›</button></div>
-        </div>
+        <div class="pagination"><span id="contadorFilas">Cargando productos...</span></div>
       </section>
     </main>
   </div>
 
   <div class="modal-backdrop" id="modalProducto">
     <div class="modal">
-      <div class="modal-head">
-        <h3 id="modalTitulo">Nuevo producto</h3>
-        <button class="icon-btn" id="cerrarModal">✕</button>
-      </div>
+      <div class="modal-head"><h3 id="modalTitulo">Nuevo producto</h3><button class="icon-btn" id="cerrarModal">✕</button></div>
       <div class="modal-body">
         <div class="modal-grid">
           <div class="field"><label>Categoría</label><input class="control" id="fCategoria" /></div>
           <div class="field"><label>Producto</label><input class="control" id="fProducto" /></div>
           <div class="field"><label>Variante</label><input class="control" id="fVariante" /></div>
           <div class="field"><label>Medida</label><input class="control" id="fMedida" /></div>
-          <div class="field"><label>Unidad</label><select class="control" id="fUnidad"><option>unidad</option><option>metro lineal</option><option>kg</option><option>rollo</option><option>juego</option></select></div>
+          <div class="field"><label>Unidad</label><select class="control" id="fUnidad"><option>unidad</option><option>metro lineal</option><option>kg</option><option>rollo</option><option>juego</option><option>litro</option><option>porcentaje</option></select></div>
           <div class="field"><label>Precio</label><input class="control" id="fPrecio" type="number" min="0" /></div>
           <div class="field"><label>IVA</label><select class="control" id="fIva"><option>Sin IVA</option><option>21%</option><option>10,5%</option></select></div>
           <div class="field"><label>Estado</label><select class="control" id="fEstado"><option>Activo</option><option>Inactivo</option></select></div>
           <div class="field full"><label>Observaciones</label><input class="control" id="fObservaciones" /></div>
         </div>
       </div>
-      <div class="modal-foot">
-        <button class="btn btn-outline" id="cancelarModal">Cancelar</button>
-        <button class="btn btn-primary" id="guardarProducto">Guardar producto</button>
-      </div>
+      <div class="modal-foot"><button class="btn btn-outline" id="cancelarModal">Cancelar</button><button class="btn btn-primary" id="guardarProducto">Guardar producto</button></div>
     </div>
   </div>
 
+  <script src="../js/data-productos.js"></script>
   <script src="../js/productos.js"></script>
 </body>
 </html>
