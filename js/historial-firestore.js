@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
 const DRAFT_KEY='chourrout_presupuesto_actual';
 const SAVED_KEY='chourrout_presupuestos_guardados';
@@ -9,6 +9,16 @@ let presupuestos=[];
 function leer(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch(e){return fallback;}}
 function escribir(key,value){localStorage.setItem(key,JSON.stringify(value));}
 function idPresupuesto(numero){return `P-${String(numero||'').replace(/[^a-zA-Z0-9_-]/g,'')}`;}
+
+async function cargarConfiguracion(){
+  try{
+    const snap=await getDoc(doc(db,'configuracion','general'));
+    window.CH_CONFIG=snap.exists()?snap.data():{};
+  }catch(error){
+    console.warn('No se pudo cargar la configuración general para el historial.',error);
+    window.CH_CONFIG={};
+  }
+}
 
 async function migrarLocales(){
   const locales=leer(SAVED_KEY,[]);if(!Array.isArray(locales)||!locales.length)return;
@@ -77,7 +87,7 @@ function aplicarFiltroDesdeUrl(){
 }
 
 try{
-  await migrarLocales();
+  await Promise.all([cargarConfiguracion(),migrarLocales()]);
   await cargarYActualizarBorradores();
 }catch(error){console.error('No se pudo sincronizar el historial con Firebase.',error);}
 
