@@ -9,12 +9,14 @@ const productos = [
   {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:'Por definir',estado:'Activo',pendiente:true}
 ];
 
-const PENDING_ADD_KEY = 'chourrout_producto_para_agregar';
+const DRAFT_KEY = 'chourrout_presupuesto_actual';
+const ADD_QUEUE_KEY = 'chourrout_productos_para_agregar';
 const tabla = document.getElementById('tablaProductos');
 const buscar = document.getElementById('buscar');
 const categoria = document.getElementById('categoria');
 const contador = document.getElementById('contadorFilas');
 const modal = document.getElementById('modalProducto');
+const volverPresupuesto = document.getElementById('volverPresupuesto');
 let editando = null;
 
 function dinero(valor){
@@ -25,6 +27,31 @@ function ivaNumero(iva){
   if(iva==='21%') return 21;
   if(iva==='10,5%') return 10.5;
   return 0;
+}
+
+function leerJson(key, fallback){
+  try{
+    const value = JSON.parse(localStorage.getItem(key) || 'null');
+    return value ?? fallback;
+  }catch(e){
+    return fallback;
+  }
+}
+
+function cantidadItemsActuales(){
+  const draft = leerJson(DRAFT_KEY, {});
+  const items = Array.isArray(draft.items) ? draft.items : [];
+  const cola = leerJson(ADD_QUEUE_KEY, []);
+  const ids = new Set(items.map(i=>i.id).filter(Boolean));
+  if(Array.isArray(cola)) cola.forEach(p=>{ if(p && p.id) ids.add(p.id); });
+  return ids.size;
+}
+
+function actualizarBotonVolver(){
+  const cantidad = cantidadItemsActuales();
+  volverPresupuesto.textContent = cantidad
+    ? `← Volver al presupuesto actual (${cantidad} ítem${cantidad===1?'':'s'})`
+    : '← Volver al presupuesto actual';
 }
 
 function render(lista = productos){
@@ -60,6 +87,7 @@ function filtrar(){
 window.agregarAPresupuesto = function(id){
   const p=productos.find(x=>x.id===id);
   if(!p) return;
+
   const payload={
     id:p.id,
     categoria:p.categoria,
@@ -72,8 +100,24 @@ window.agregarAPresupuesto = function(id){
     pendiente:Boolean(p.pendiente),
     tranquera:Boolean(p.tranquera)
   };
-  localStorage.setItem(PENDING_ADD_KEY,JSON.stringify(payload));
-  alert(`${p.producto}${p.medida?' · '+p.medida:''} fue agregado al presupuesto actual. Podés seguir seleccionando productos o volver a la pestaña del presupuesto.`);
+
+  const cola = leerJson(ADD_QUEUE_KEY, []);
+  const lista = Array.isArray(cola) ? cola : [];
+  const existente = lista.find(x=>x.id===payload.id);
+  if(existente) existente.cantidad = Number(existente.cantidad||1) + 1;
+  else lista.push({...payload,cantidad:1});
+  localStorage.setItem(ADD_QUEUE_KEY,JSON.stringify(lista));
+  actualizarBotonVolver();
+
+  const boton = [...document.querySelectorAll('.icon-btn')].find(b=>b.getAttribute('onclick')===`agregarAPresupuesto('${p.id}')`);
+  if(boton){
+    const original = boton.textContent;
+    boton.textContent = '✓ Agregado';
+    boton.style.borderColor = '#111';
+    boton.style.background = '#111';
+    boton.style.color = '#fff';
+    setTimeout(()=>{boton.textContent=original;boton.removeAttribute('style');},900);
+  }
 }
 
 function abrirModal(){ modal.classList.add('open'); }
@@ -130,5 +174,8 @@ document.getElementById('verPendientes').addEventListener('click',()=>render(pro
 document.getElementById('mostrarTodos').addEventListener('click',()=>{buscar.value='';categoria.value='';render(productos);});
 buscar.addEventListener('input',filtrar);
 categoria.addEventListener('change',filtrar);
+window.addEventListener('storage',actualizarBotonVolver);
+window.addEventListener('focus',actualizarBotonVolver);
 
+actualizarBotonVolver();
 render();
