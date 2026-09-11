@@ -6,7 +6,7 @@
   <title>Configuración | Chourrout Hnos.</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <style>
-    .config-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}.config-card{background:#fff;border:1px solid #e6e6e6;border-radius:16px;padding:20px}.config-card h3{margin:0 0 5px}.config-card p{margin:0 0 18px;color:#777}.config-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.config-fields .full{grid-column:1/-1}.config-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.saved-state{font-size:13px;color:#666;margin-right:auto;align-self:center}.preview{background:#f7f7f7;border-radius:12px;padding:16px;line-height:1.65}.preview strong{display:block;margin-bottom:7px}.preview small{color:#777}.textarea{min-height:95px;resize:vertical}.hint{font-size:12px;color:#888;margin-top:5px}@media(max-width:900px){.config-grid{grid-template-columns:1fr}.config-fields{grid-template-columns:1fr}.config-fields .full{grid-column:auto}}
+    .config-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}.config-card{background:#fff;border:1px solid #e6e6e6;border-radius:16px;padding:20px}.config-card h3{margin:0 0 5px}.config-card p{margin:0 0 18px;color:#777}.config-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.config-fields .full{grid-column:1/-1}.config-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.saved-state{font-size:13px;color:#666;margin-right:auto;align-self:center}.preview{background:#f7f7f7;border-radius:12px;padding:16px;line-height:1.65}.preview strong{display:block;margin-bottom:7px}.preview small{color:#777}.textarea{min-height:95px;resize:vertical}.hint{font-size:12px;color:#888;margin-top:5px}.backup-actions{display:flex;gap:10px;flex-wrap:wrap}.backup-state{font-size:12px;color:#777;margin-top:12px;line-height:1.5}@media(max-width:900px){.config-grid{grid-template-columns:1fr}.config-fields{grid-template-columns:1fr}.config-fields .full{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -47,15 +47,29 @@
         <div class="config-actions"><span class="saved-state" id="estadoGuardado"></span><button class="btn btn-outline" id="restaurar">Restaurar valores iniciales</button><button class="btn btn-primary" id="guardarConfig">Guardar configuración</button></div>
       </section>
 
-      <section class="config-card">
-        <h3>Vista previa</h3>
-        <p>Así quedarán los datos generales que utilizará el sistema.</p>
-        <div class="preview" id="previewConfig"></div>
-      </section>
+      <div style="display:grid;gap:18px">
+        <section class="config-card">
+          <h3>Vista previa</h3>
+          <p>Así quedarán los datos generales que utilizará el sistema.</p>
+          <div class="preview" id="previewConfig"></div>
+        </section>
+
+        <section class="config-card">
+          <h3>Respaldo de datos</h3>
+          <p>Descargá una copia independiente de la información guardada en Firebase.</p>
+          <div class="backup-actions">
+            <button class="btn btn-primary" id="exportarJson">Descargar respaldo JSON</button>
+            <button class="btn btn-outline" id="exportarClientesCsv">Clientes CSV</button>
+            <button class="btn btn-outline" id="exportarProductosCsv">Productos CSV</button>
+          </div>
+          <div class="backup-state" id="estadoRespaldo">El respaldo JSON incluye productos, clientes, presupuestos y configuración.</div>
+        </section>
+      </div>
     </div>
   </main>
 </div>
 <script type="module" src="../js/configuracion.js"></script>
+<script type="module" src="../js/respaldo.js"></script>
 <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
