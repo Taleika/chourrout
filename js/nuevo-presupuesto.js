@@ -15,17 +15,23 @@ const EXTRA_CUADRADOS_TIRETAS = 106000;
 
 const DRAFT_KEY='chourrout_presupuesto_actual';
 const SAVED_KEY='chourrout_presupuestos_guardados';
+const CLIENTES_KEY='chourrout_clientes';
 const PENDING_ADD_KEY='chourrout_producto_para_agregar';
 const ADD_QUEUE_KEY='chourrout_productos_para_agregar';
 let items=[];
 let itemSeq=1;
 let estadoActual='borrador';
+let clientes=[];
+let clienteSeleccionadoId=null;
 
 const buscar=document.getElementById('buscarProducto');
 const resultados=document.getElementById('resultadosProducto');
 const contenedor=document.getElementById('itemsPresupuesto');
 const ivaGlobal=document.getElementById('ivaGlobal');
 const estadoPresupuesto=document.getElementById('estadoPresupuesto');
+const buscarCliente=document.getElementById('buscarClientePresupuesto');
+const resultadosCliente=document.getElementById('resultadosCliente');
+const ayudaCliente=document.getElementById('ayudaCliente');
 
 function dinero(v){
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:2}).format(v||0);
@@ -33,6 +39,7 @@ function dinero(v){
 function descripcion(p){return [p.producto,p.variante,p.medida].filter(Boolean).join(' · ');}
 function hoy(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 function leerJson(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null') ?? fallback;}catch(e){return fallback;}}
+function cargarClientes(){const data=leerJson(CLIENTES_KEY,[]);clientes=Array.isArray(data)?data:[];}
 
 function actualizarEstado(){
   if(estadoActual==='definitivo'){
@@ -51,6 +58,7 @@ function snapshotPresupuesto(estado='borrador'){
   return {
     numero:document.getElementById('numeroPresupuesto').textContent.trim(),
     estado,
+    clienteId:clienteSeleccionadoId,
     clienteNombre:document.getElementById('clienteNombre').value,
     clienteCuit:document.getElementById('clienteCuit').value,
     clienteTelefono:document.getElementById('clienteTelefono').value,
@@ -65,6 +73,7 @@ function guardarDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(snapshotPr
 function cargarDraft(){
   const draft=leerJson(DRAFT_KEY,null);
   if(draft){
+    clienteSeleccionadoId=draft.clienteId||null;
     document.getElementById('clienteNombre').value=draft.clienteNombre||'';
     document.getElementById('clienteCuit').value=draft.clienteCuit||'';
     document.getElementById('clienteTelefono').value=draft.clienteTelefono||'';
@@ -81,6 +90,47 @@ function cargarDraft(){
     estadoActual='borrador';
   }
   actualizarEstado();
+  actualizarAyudaCliente();
+}
+
+function actualizarAyudaCliente(){
+  if(clienteSeleccionadoId){
+    const c=clientes.find(x=>x.id===clienteSeleccionadoId);
+    ayudaCliente.textContent=c?`Cliente seleccionado: ${c.nombre}`:'Cliente guardado seleccionado.';
+  }else{
+    ayudaCliente.textContent='Seleccioná un cliente guardado o completá los datos manualmente.';
+  }
+}
+
+function buscarClientesPresupuesto(){
+  cargarClientes();
+  const q=buscarCliente.value.trim().toLowerCase();
+  if(!q){resultadosCliente.classList.remove('open');resultadosCliente.innerHTML='';return;}
+  const lista=clientes.filter(c=>`${c.nombre||''} ${c.cuit||''} ${c.telefono||''} ${c.email||''}`.toLowerCase().includes(q)).slice(0,10);
+  if(!lista.length){
+    resultadosCliente.innerHTML='<div class="product-option"><div><strong>Sin resultados</strong><small>Podés cargarlo desde Clientes.</small></div></div>';
+  }else{
+    resultadosCliente.innerHTML=lista.map(c=>`
+      <div class="product-option" data-cliente-id="${c.id}">
+        <div><strong>${c.nombre}</strong><small>${[c.cuit,c.telefono,c.email].filter(Boolean).join(' · ')||'Sin datos adicionales'}</small></div>
+        <div class="product-option-price"><small>Seleccionar</small></div>
+      </div>`).join('');
+  }
+  resultadosCliente.classList.add('open');
+  resultadosCliente.querySelectorAll('[data-cliente-id]').forEach(el=>el.addEventListener('click',()=>seleccionarCliente(el.dataset.clienteId)));
+}
+
+function seleccionarCliente(id){
+  const c=clientes.find(x=>x.id===id);if(!c)return;
+  clienteSeleccionadoId=c.id;
+  document.getElementById('clienteNombre').value=c.nombre||'';
+  document.getElementById('clienteCuit').value=c.cuit||'';
+  document.getElementById('clienteTelefono').value=c.telefono||'';
+  buscarCliente.value='';
+  resultadosCliente.classList.remove('open');
+  actualizarAyudaCliente();
+  marcarComoBorrador();
+  guardarDraft();
 }
 
 function nuevoItemDesdeProducto(p,cantidad=1){
@@ -214,11 +264,23 @@ function guardarDefinitivo(){
 }
 
 buscar.addEventListener('input',buscarProductos);
-document.addEventListener('click',e=>{if(!e.target.closest('.product-picker'))resultados.classList.remove('open');});
+buscarCliente.addEventListener('input',buscarClientesPresupuesto);
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.product-picker'))resultados.classList.remove('open');
+  if(!e.target.closest('.client-picker'))resultadosCliente.classList.remove('open');
+});
 ivaGlobal.addEventListener('change',()=>{marcarComoBorrador();actualizarTotalesSinRender();guardarDraft();});
-['clienteNombre','clienteCuit','clienteTelefono','fechaPresupuesto','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{marcarComoBorrador();guardarDraft();}));
-window.addEventListener('storage',e=>{if((e.key===ADD_QUEUE_KEY||e.key===PENDING_ADD_KEY)&&e.newValue){if(importarProductosPendientes())render();}});
-window.addEventListener('focus',()=>{if(importarProductosPendientes())render();});
+['clienteNombre','clienteCuit','clienteTelefono','fechaPresupuesto','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{
+  if(id==='clienteNombre'||id==='clienteCuit'||id==='clienteTelefono') clienteSeleccionadoId=null;
+  actualizarAyudaCliente();
+  marcarComoBorrador();
+  guardarDraft();
+}));
+window.addEventListener('storage',e=>{
+  if((e.key===ADD_QUEUE_KEY||e.key===PENDING_ADD_KEY)&&e.newValue){if(importarProductosPendientes())render();}
+  if(e.key===CLIENTES_KEY){cargarClientes();actualizarAyudaCliente();}
+});
+window.addEventListener('focus',()=>{cargarClientes();actualizarAyudaCliente();if(importarProductosPendientes())render();});
 
 document.getElementById('guardarBorrador').addEventListener('click',()=>{estadoActual='borrador';actualizarEstado();guardarDraft();alert('Presupuesto guardado como borrador.');});
 document.getElementById('guardarDefinitivo').addEventListener('click',guardarDefinitivo);
@@ -228,6 +290,7 @@ document.getElementById('generarPdf').addEventListener('click',()=>{
   alert('La exportación PDF es el siguiente módulo a conectar. El presupuesto ya conserva productos, IVA, adicionales y estado.');
 });
 
+cargarClientes();
 cargarDraft();
 importarProductosPendientes();
 render();
