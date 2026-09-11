@@ -24,16 +24,16 @@
     <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
   </aside>
   <main class="main">
-    <div class="topbar"><div class="welcome"><span class="eyebrow">Presupuestos</span><h1>Historial</h1><p>Consultá, duplicá y exportá presupuestos sin necesidad de abrirlos.</p></div><a class="btn btn-primary" href="nuevo.html">＋ Nuevo presupuesto</a></div>
+    <div class="topbar"><div class="welcome"><span class="eyebrow">Presupuestos</span><h1>Historial</h1><p>Consultá, duplicá, eliminá y exportá presupuestos sincronizados entre las cuentas autorizadas.</p></div><a class="btn btn-primary" href="nuevo.html">＋ Nuevo presupuesto</a></div>
     <section class="history-stats"><div class="history-stat"><span>Total</span><strong id="statTotal">0</strong></div><div class="history-stat"><span>Definitivos</span><strong id="statDefinitivos">0</strong></div><div class="history-stat"><span>Borradores</span><strong id="statBorradores">0</strong></div></section>
     <div class="toolbar"><input id="buscarPresupuesto" class="control" type="search" placeholder="Buscar por número o cliente..."><select id="filtroEstado" class="control"><option value="">Todos los estados</option><option value="borrador">Borrador</option><option value="definitivo">Guardado definitivo</option></select><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
-    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Ítems</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="tablaPresupuestos"></tbody></table></div><div class="pagination"><span id="contadorPresupuestos">0 presupuestos</span></div></section>
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Ítems</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="tablaPresupuestos"></tbody></table></div><div class="pagination"><span id="contadorPresupuestos">Cargando presupuestos...</span></div></section>
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="../js/logo-chourrout.js"></script>
-<script src="../js/historial.js"></script>
+<script type="module" src="../js/historial-firestore.js"></script>
 <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
