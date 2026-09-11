@@ -6,7 +6,7 @@
   <title>Presupuestos | Chourrout Hnos.</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <style>
-    .history-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}.history-stat{background:#fff;border:1px solid #e7e7e7;border-radius:14px;padding:16px 18px}.history-stat span{display:block;color:#777;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.history-stat strong{display:block;font-size:26px;margin-top:4px}.actions{display:flex;gap:6px;flex-wrap:wrap}.icon-btn.pdf-btn{border-color:#111;background:#111;color:#fff}.icon-btn.pdf-btn:hover{background:#ef1616;border-color:#ef1616}.action-icon{font-size:14px;margin-right:4px}.history-client strong{display:block}.history-client small{display:block;color:#777;margin-top:2px}.history-date small{display:block;color:#888;margin-top:2px}.badge-draft{background:#fff3cd;color:#7b5b00}.empty-history{text-align:center;padding:36px 12px;color:#777}@media(max-width:820px){.history-stats{grid-template-columns:1fr}.actions{min-width:210px}}
+    .history-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}.history-stat{background:#fff;border:1px solid #e7e7e7;border-radius:14px;padding:16px 18px}.history-stat span{display:block;color:#777;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.history-stat strong{display:block;font-size:26px;margin-top:4px}.actions{display:flex;gap:6px;flex-wrap:wrap}.icon-btn.pdf-btn{border-color:#111;background:#111;color:#fff}.icon-btn.pdf-btn:hover{background:#ef1616;border-color:#ef1616}.action-icon{font-size:14px;margin-right:4px}.history-client strong{display:block}.history-client small{display:block;color:#777;margin-top:2px}.history-date small{display:block;color:#888;margin-top:2px}.badge-draft{background:#fff3cd;color:#7b5b00}.empty-history{text-align:center;padding:36px 12px;color:#777}.history-filters{display:grid;grid-template-columns:minmax(240px,1.5fr) minmax(180px,.8fr) minmax(150px,.7fr) minmax(150px,.7fr) auto;gap:10px;align-items:end;margin-bottom:14px}.filter-field label{display:block;font-size:10px;font-weight:800;text-transform:uppercase;color:#777;margin:0 0 5px 2px}.filter-field .control{width:100%}@media(max-width:1050px){.history-filters{grid-template-columns:1fr 1fr 1fr}.history-filters .wide{grid-column:span 2}}@media(max-width:820px){.history-stats{grid-template-columns:1fr}.actions{min-width:210px}.history-filters{grid-template-columns:1fr}.history-filters .wide{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -15,7 +15,7 @@
     <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
     <nav class="menu">
       <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
-      <a class="menu-item" href="nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+      <a class="menu-item" href="nuevo.html?nuevo=1"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
       <a class="menu-item active" href="historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
       <a class="menu-item" href="../admin/productos.html"><span class="menu-icon">▦</span>Productos</a>
       <a class="menu-item" href="../admin/clientes.html"><span class="menu-icon">♙</span>Clientes</a>
@@ -24,16 +24,23 @@
     <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
   </aside>
   <main class="main">
-    <div class="topbar"><div class="welcome"><span class="eyebrow">Presupuestos</span><h1>Historial</h1><p>Consultá, duplicá, eliminá y exportá presupuestos sincronizados entre las cuentas autorizadas.</p></div><a class="btn btn-primary" href="nuevo.html">＋ Nuevo presupuesto</a></div>
+    <div class="topbar"><div class="welcome"><span class="eyebrow">Presupuestos</span><h1>Historial</h1><p>Consultá, duplicá, eliminá y exportá presupuestos sincronizados entre las cuentas autorizadas.</p></div><a class="btn btn-primary" href="nuevo.html?nuevo=1">＋ Nuevo presupuesto</a></div>
     <section class="history-stats"><div class="history-stat"><span>Total</span><strong id="statTotal">0</strong></div><div class="history-stat"><span>Definitivos</span><strong id="statDefinitivos">0</strong></div><div class="history-stat"><span>Borradores</span><strong id="statBorradores">0</strong></div></section>
-    <div class="toolbar"><input id="buscarPresupuesto" class="control" type="search" placeholder="Buscar por número o cliente..."><select id="filtroEstado" class="control"><option value="">Todos los estados</option><option value="borrador">Borrador</option><option value="definitivo">Guardado definitivo</option></select><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
+    <div class="history-filters">
+      <div class="filter-field wide"><label>Buscar</label><input id="buscarPresupuesto" class="control" type="search" placeholder="Número, cliente o CUIT..."></div>
+      <div class="filter-field"><label>Estado</label><select id="filtroEstado" class="control"><option value="">Todos</option><option value="borrador">Borrador</option><option value="definitivo">Definitivo</option></select></div>
+      <div class="filter-field"><label>Desde</label><input id="filtroDesde" class="control" type="date"></div>
+      <div class="filter-field"><label>Hasta</label><input id="filtroHasta" class="control" type="date"></div>
+      <button id="mostrarTodos" class="btn btn-outline">Limpiar filtros</button>
+    </div>
     <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Ítems</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="tablaPresupuestos"></tbody></table></div><div class="pagination"><span id="contadorPresupuestos">Cargando presupuestos...</span></div></section>
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-<script src="../js/logo-chourrout.js?v=20260911-1344"></script>
-<script type="module" src="../js/historial-firestore.js?v=20260911-1344"></script>
+<script src="../js/logo-chourrout.js?v=20260911-1355"></script>
+<script type="module" src="../js/historial-firestore.js?v=20260911-1355"></script>
+<script src="../js/historial-comodidad.js?v=20260911-1355"></script>
 <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
