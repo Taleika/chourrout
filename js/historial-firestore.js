@@ -26,7 +26,7 @@ async function cargarYActualizarBorradores(){
   const mapaProductos=new Map(snapProd.docs.map(d=>{const p=d.data();return [d.id,{...p,id:d.id}];}));
   presupuestos=[];
   for(const d of snapPres.docs){
-    let p={...d.data(),_docId:d.id};
+    let p={...d.data()};
     if(p.estado!=='definitivo'&&Array.isArray(p.items)){
       let cambio=false;
       p.items=p.items.map(i=>{
@@ -35,9 +35,11 @@ async function cargarYActualizarBorradores(){
         if(Number(i.precioActual??i.precio)!==precio)cambio=true;
         return {...i,precio,precioActual:precio,pendiente:Boolean(actual.pendiente)||precio===999,producto:actual.producto||i.producto,variante:actual.variante??i.variante,medida:actual.medida??i.medida,unidad:actual.unidad||i.unidad};
       });
-      if(cambio){p.actualizadoEn=new Date().toISOString();await setDoc(doc(db,'presupuestos',d.id),{...p,_docId:undefined,actualizadoServidor:serverTimestamp()},{merge:false});}
+      if(cambio){
+        p.actualizadoEn=new Date().toISOString();
+        await setDoc(doc(db,'presupuestos',d.id),{...p,actualizadoServidor:serverTimestamp()},{merge:false});
+      }
     }
-    delete p._docId;
     presupuestos.push(p);
   }
   presupuestos.sort((a,b)=>String(b.actualizadoEn||b.fecha||'').localeCompare(String(a.actualizadoEn||a.fecha||'')));
