@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuevo presupuesto | Chourrout Hnos.</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/presupuestos.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div>
+        <div class="brand-subtitle">Sistema de presupuestos</div>
+      </div>
+      <nav class="menu">
+        <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
+        <a class="menu-item active" href="nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+        <a class="menu-item" href="historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
+        <a class="menu-item" href="../admin/productos.html"><span class="menu-icon">▦</span>Productos</a>
+        <a class="menu-item" href="../admin/clientes.html"><span class="menu-icon">♙</span>Clientes</a>
+        <a class="menu-item" href="../admin/configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
+      </nav>
+      <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="welcome">
+          <span class="eyebrow">Presupuesto</span>
+          <h1>Nuevo presupuesto</h1>
+          <p>Armá la cotización, aplicá IVA y adicionales, y revisá el total en tiempo real.</p>
+        </div>
+        <div class="quote-number"><span>Nº</span><strong id="numeroPresupuesto">000001</strong></div>
+      </div>
+
+      <section class="budget-grid">
+        <div class="budget-main">
+          <section class="budget-card">
+            <div class="budget-card-head"><div><span class="step">1</span><h3>Cliente</h3></div><span class="muted">Datos del destinatario</span></div>
+            <div class="client-grid">
+              <div class="field"><label>Nombre / Razón social</label><input class="control" id="clienteNombre" placeholder="Ej: Nicolás Tosca"></div>
+              <div class="field"><label>CUIT</label><input class="control" id="clienteCuit" placeholder="Opcional"></div>
+              <div class="field"><label>Teléfono</label><input class="control" id="clienteTelefono" placeholder="Opcional"></div>
+              <div class="field"><label>Fecha</label><input class="control" type="date" id="fechaPresupuesto"></div>
+            </div>
+          </section>
+
+          <section class="budget-card product-picker">
+            <div class="budget-card-head"><div><span class="step">2</span><h3>Agregar productos</h3></div><span class="muted">Buscá por nombre, categoría o medida</span></div>
+            <div class="search-wrap">
+              <input id="buscarProducto" class="control search-product" type="search" placeholder="Ej: tranquera 4 m, varilla curupay, poste 2,20..." autocomplete="off">
+              <div class="product-results" id="resultadosProducto"></div>
+            </div>
+          </section>
+
+          <section class="budget-card">
+            <div class="budget-card-head"><div><span class="step">3</span><h3>Detalle</h3></div><span class="muted" id="cantidadItems">0 ítems</span></div>
+            <div class="quote-items" id="itemsPresupuesto">
+              <div class="empty-state" id="estadoVacio"><strong>Todavía no agregaste productos.</strong><span>Usá el buscador de arriba para comenzar.</span></div>
+            </div>
+          </section>
+
+          <section class="budget-card">
+            <div class="budget-card-head"><div><span class="step">4</span><h3>Observaciones</h3></div></div>
+            <textarea id="observaciones" class="quote-textarea" placeholder="Ej: Presupuesto válido por 7 días. Entrega sujeta a disponibilidad."></textarea>
+          </section>
+        </div>
+
+        <aside class="budget-summary">
+          <div class="summary-card sticky-summary">
+            <div class="summary-title"><span>Resumen</span><span class="badge badge-iva">ARS</span></div>
+
+            <div class="global-iva">
+              <label>IVA del presupuesto</label>
+              <select id="ivaGlobal" class="control">
+                <option value="individual">Según cada producto</option>
+                <option value="21">Aplicar 21% a todos</option>
+                <option value="10.5">Aplicar 10,5% a todos</option>
+              </select>
+              <small>Este cambio no modifica la ficha del producto.</small>
+            </div>
+
+            <div class="summary-lines">
+              <div><span>Subtotal</span><strong id="subtotal">$0</strong></div>
+              <div><span>IVA 21%</span><strong id="iva21">$0</strong></div>
+              <div><span>IVA 10,5%</span><strong id="iva105">$0</strong></div>
+              <div class="summary-total"><span>Total</span><strong id="total">$0</strong></div>
+            </div>
+
+            <div class="summary-warning" id="warningPendientes" hidden>⚠ Hay productos con precio pendiente ($999). Revisalos antes de emitir.</div>
+
+            <div class="summary-actions">
+              <button class="btn btn-outline" id="guardarBorrador">Guardar borrador</button>
+              <button class="btn btn-primary" id="generarPdf">Generar PDF</button>
+            </div>
+            <p class="prototype-note">Versión de prueba: todavía no guarda en Firebase ni genera el PDF definitivo.</p>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/nuevo-presupuesto.js"></script>
+</body>
+</html>
