@@ -9,13 +9,7 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">
-          <div class="brand-ch">CH</div>
-          <div class="brand-name">Chourrout Hnos.</div>
-        </div>
-        <div class="brand-subtitle">Sistema de presupuestos</div>
-      </div>
+      <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
       <nav class="menu">
         <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
         <a class="menu-item" href="../presupuestos/nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
@@ -26,75 +20,19 @@
       </nav>
       <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
     </aside>
-
     <main class="main">
-      <div class="topbar">
-        <div class="welcome">
-          <span class="eyebrow">Administración</span>
-          <h1>Productos y precios</h1>
-          <p>Administrá la lista maestra que se usará para crear los presupuestos.</p>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-          <a class="btn btn-outline" id="volverPresupuesto" href="../presupuestos/nuevo.html">← Volver al presupuesto actual</a>
-          <button class="btn btn-primary" id="btnNuevo">＋ Nuevo producto</button>
-        </div>
-      </div>
-
-      <div class="notice">
-        <div><strong><span id="noticePendientes">0</span> productos tienen precio pendiente.</strong> Se muestran con $999 para identificarlos y corregirlos antes de presupuestar.</div>
-        <button class="btn btn-outline" id="verPendientes">Ver pendientes</button>
-      </div>
-
-      <section class="stats">
-        <div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value" id="totalProductos">0</div><div class="stat-note">Base maestra inicial</div></div>
-        <div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending" id="totalPendientes">0</div><div class="stat-note">Requieren revisión</div></div>
-        <div class="stat"><div class="stat-label">IVA</div><div class="stat-value">Sin IVA</div><div class="stat-note">Opcional: 21% o 10,5%</div></div>
-      </section>
-
-      <div class="section-head">
-        <div><h3>Lista de productos</h3><p>Buscá, filtrá o editá cualquier artículo.</p></div>
-      </div>
-
-      <div class="toolbar">
-        <input id="buscar" class="control" type="search" placeholder="Buscar producto, medida o categoría..." />
-        <select id="categoria" class="control"><option value="">Todas las categorías</option></select>
-        <button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button>
-      </div>
-
-      <section class="panel">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>ID</th><th>Categoría</th><th>Producto</th><th>Variante / medida</th><th>Unidad</th><th>Precio</th><th>IVA</th><th>Estado</th><th>Acciones</th></tr></thead>
-            <tbody id="tablaProductos"></tbody>
-          </table>
-        </div>
-        <div class="pagination"><span id="contadorFilas">Cargando productos...</span></div>
-      </section>
+      <div class="topbar"><div class="welcome"><span class="eyebrow">Administración</span><h1>Productos y precios</h1><p>Administrá la lista maestra que se usará para crear los presupuestos.</p></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;"><a class="btn btn-outline" id="volverPresupuesto" href="../presupuestos/nuevo.html">← Volver al presupuesto actual</a><button class="btn btn-primary" id="btnNuevo">＋ Nuevo producto</button></div></div>
+      <div class="notice"><div><strong><span id="noticePendientes">0</span> productos tienen precio pendiente.</strong> Se muestran con $999 para identificarlos y corregirlos antes de presupuestar.</div><button class="btn btn-outline" id="verPendientes">Ver pendientes</button></div>
+      <section class="stats"><div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value" id="totalProductos">0</div><div class="stat-note">Base maestra inicial</div></div><div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending" id="totalPendientes">0</div><div class="stat-note">Requieren revisión</div></div><div class="stat"><div class="stat-label">IVA</div><div class="stat-value">Sin IVA</div><div class="stat-note">Opcional: 21% o 10,5%</div></div></section>
+      <div class="section-head"><div><h3>Lista de productos</h3><p>Buscá, filtrá o editá cualquier artículo.</p></div></div>
+      <div class="toolbar"><input id="buscar" class="control" type="search" placeholder="Buscar producto, medida o categoría..." /><select id="categoria" class="control"><option value="">Todas las categorías</option></select><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
+      <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Categoría</th><th>Producto</th><th>Variante / medida</th><th>Unidad</th><th>Precio</th><th>IVA</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaProductos"></tbody></table></div><div class="pagination"><span id="contadorFilas">Cargando productos...</span></div></section>
     </main>
   </div>
-
-  <div class="modal-backdrop" id="modalProducto">
-    <div class="modal">
-      <div class="modal-head"><h3 id="modalTitulo">Nuevo producto</h3><button class="icon-btn" id="cerrarModal">✕</button></div>
-      <div class="modal-body">
-        <div class="modal-grid">
-          <div class="field"><label>Categoría</label><input class="control" id="fCategoria" /></div>
-          <div class="field"><label>Producto</label><input class="control" id="fProducto" /></div>
-          <div class="field"><label>Variante</label><input class="control" id="fVariante" /></div>
-          <div class="field"><label>Medida</label><input class="control" id="fMedida" /></div>
-          <div class="field"><label>Unidad</label><select class="control" id="fUnidad"><option>unidad</option><option>metro lineal</option><option>kg</option><option>rollo</option><option>juego</option><option>litro</option><option>porcentaje</option></select></div>
-          <div class="field"><label>Precio</label><input class="control" id="fPrecio" type="number" min="0" /></div>
-          <div class="field"><label>IVA</label><select class="control" id="fIva"><option>Sin IVA</option><option>21%</option><option>10,5%</option></select></div>
-          <div class="field"><label>Estado</label><select class="control" id="fEstado"><option>Activo</option><option>Inactivo</option></select></div>
-          <div class="field full"><label>Observaciones</label><input class="control" id="fObservaciones" /></div>
-        </div>
-      </div>
-      <div class="modal-foot"><button class="btn btn-outline" id="cancelarModal">Cancelar</button><button class="btn btn-primary" id="guardarProducto">Guardar producto</button></div>
-    </div>
-  </div>
-
+  <div class="modal-backdrop" id="modalProducto"><div class="modal"><div class="modal-head"><h3 id="modalTitulo">Nuevo producto</h3><button class="icon-btn" id="cerrarModal">✕</button></div><div class="modal-body"><div class="modal-grid"><div class="field"><label>Categoría</label><input class="control" id="fCategoria" /></div><div class="field"><label>Producto</label><input class="control" id="fProducto" /></div><div class="field"><label>Variante</label><input class="control" id="fVariante" /></div><div class="field"><label>Medida</label><input class="control" id="fMedida" /></div><div class="field"><label>Unidad</label><select class="control" id="fUnidad"><option>unidad</option><option>metro lineal</option><option>kg</option><option>rollo</option><option>juego</option><option>litro</option><option>porcentaje</option></select></div><div class="field"><label>Precio</label><input class="control" id="fPrecio" type="number" min="0" /></div><div class="field"><label>IVA</label><select class="control" id="fIva"><option>Sin IVA</option><option>21%</option><option>10,5%</option></select></div><div class="field"><label>Estado</label><select class="control" id="fEstado"><option>Activo</option><option>Inactivo</option></select></div><div class="field full"><label>Observaciones</label><input class="control" id="fObservaciones" /></div></div></div><div class="modal-foot"><button class="btn btn-outline" id="cancelarModal">Cancelar</button><button class="btn btn-primary" id="guardarProducto">Guardar producto</button></div></div></div>
   <script src="../js/data-productos.js"></script>
   <script src="../js/actualizacion-precios.js"></script>
   <script src="../js/productos.js"></script>
+  <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
