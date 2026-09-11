@@ -67,12 +67,22 @@ async function eliminarPresupuesto(numero){
   location.reload();
 }
 
+function aplicarFiltroDesdeUrl(){
+  const q=new URL(location.href).searchParams.get('q');
+  if(!q)return;
+  const input=document.getElementById('buscarPresupuesto');
+  if(!input)return;
+  input.value=q;
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+}
+
 try{
   await migrarLocales();
   await cargarYActualizarBorradores();
 }catch(error){console.error('No se pudo sincronizar el historial con Firebase.',error);}
 
 await import('./historial.js');
+aplicarFiltroDesdeUrl();
 agregarBotonesEliminar();
 new MutationObserver(agregarBotonesEliminar).observe(tabla,{childList:true,subtree:true});
 tabla.addEventListener('click',e=>{const b=e.target.closest('[data-action="eliminar-firestore"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();eliminarPresupuesto(b.dataset.numero).catch(err=>alert(`No se pudo eliminar el presupuesto: ${err.message||err}`));},true);
