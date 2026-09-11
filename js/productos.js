@@ -3,12 +3,13 @@ const productos = [
   {id:'P0014',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'1,80 m',unidad:'unidad',precio:999,iva:'Por definir',estado:'Activo',pendiente:true},
   {id:'P0044',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,20 m',unidad:'unidad',precio:2560,iva:'21%',estado:'Activo',pendiente:false},
   {id:'P0045',categoria:'Varillas de curupay',producto:'Varilla de curupay',variante:'',medida:'1 1/2 x 2 x 1,40 m',unidad:'unidad',precio:3170,iva:'21%',estado:'Activo',pendiente:false},
-  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:'21%',estado:'Activo',pendiente:false},
-  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:'21%',estado:'Activo',pendiente:false},
-  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:'21%',estado:'Activo',pendiente:false},
+  {id:'P0049',categoria:'Tablas de curupay',producto:'Tabla de curupay',variante:'',medida:'1 x 4',unidad:'metro lineal',precio:7680,iva:'10,5%',estado:'Activo',pendiente:false},
+  {id:'P0066',categoria:'Tranqueras',producto:'Tranquera',variante:'Curupay',medida:'4,00 m',unidad:'unidad',precio:373000,iva:'21%',estado:'Activo',pendiente:false,tranquera:true},
+  {id:'P0067',categoria:'Tranqueras',producto:'Tranquera',variante:'Rostrata',medida:'4,00 m',unidad:'unidad',precio:260000,iva:'21%',estado:'Activo',pendiente:false,tranquera:true},
   {id:'P0118',categoria:'Alambres',producto:'Acindar 17/15',variante:'',medida:'',unidad:'rollo',precio:999,iva:'Por definir',estado:'Activo',pendiente:true}
 ];
 
+const PENDING_ADD_KEY = 'chourrout_producto_para_agregar';
 const tabla = document.getElementById('tablaProductos');
 const buscar = document.getElementById('buscar');
 const categoria = document.getElementById('categoria');
@@ -18,6 +19,12 @@ let editando = null;
 
 function dinero(valor){
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(valor);
+}
+
+function ivaNumero(iva){
+  if(iva==='21%') return 21;
+  if(iva==='10,5%') return 10.5;
+  return 0;
 }
 
 function render(lista = productos){
@@ -33,7 +40,7 @@ function render(lista = productos){
       <td class="money">${dinero(p.precio)} ${p.pendiente ? '<span class="badge badge-pending">Pendiente</span>' : ''}</td>
       <td><span class="badge badge-iva">${p.iva}</span></td>
       <td><span class="badge badge-ok">${p.estado}</span></td>
-      <td><div class="actions"><button class="icon-btn" onclick="editar('${p.id}')">Editar</button></div></td>
+      <td><div class="actions"><button class="icon-btn" onclick="agregarAPresupuesto('${p.id}')">+ Presupuesto</button><button class="icon-btn" onclick="editar('${p.id}')">Editar</button></div></td>
     `;
     tabla.appendChild(tr);
   });
@@ -48,6 +55,25 @@ function filtrar(){
     return (!q || texto.includes(q)) && (!c || p.categoria === c);
   });
   render(lista);
+}
+
+window.agregarAPresupuesto = function(id){
+  const p=productos.find(x=>x.id===id);
+  if(!p) return;
+  const payload={
+    id:p.id,
+    categoria:p.categoria,
+    producto:p.producto,
+    variante:p.variante||'',
+    medida:p.medida||'',
+    unidad:p.unidad,
+    precio:Number(p.precio)||999,
+    iva:ivaNumero(p.iva),
+    pendiente:Boolean(p.pendiente),
+    tranquera:Boolean(p.tranquera)
+  };
+  localStorage.setItem(PENDING_ADD_KEY,JSON.stringify(payload));
+  alert(`${p.producto}${p.medida?' · '+p.medida:''} fue agregado al presupuesto actual. Podés seguir seleccionando productos o volver a la pestaña del presupuesto.`);
 }
 
 function abrirModal(){ modal.classList.add('open'); }
