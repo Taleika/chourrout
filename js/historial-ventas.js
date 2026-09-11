@@ -23,9 +23,8 @@ function estadoComercial(p){return p.resultadoComercial||'pendiente';}
 
 function instalarPanel(){
   if(document.getElementById('ventasResumen'))return;
-  const toolbar=document.querySelector('.toolbar');if(!toolbar)return;
-  const panel=document.createElement('section');panel.id='ventasResumen';panel.className='history-stats';panel.style.marginBottom='16px';
-  panel.style.gridTemplateColumns='repeat(5,minmax(0,1fr))';
+  const toolbar=document.querySelector('.history-filters')||document.querySelector('.toolbar');if(!toolbar)return;
+  const panel=document.createElement('section');panel.id='ventasResumen';panel.className='history-stats';
   panel.innerHTML=`
     <div class="history-stat"><span>Total definitivo</span><strong id="ventaTotal">—</strong><small id="ventaTotalCant" style="color:#888"></small></div>
     <div class="history-stat"><span>Concretado</span><strong id="ventaConcretado">—</strong><small id="ventaConcretadoCant" style="color:#888"></small></div>
