@@ -34,7 +34,20 @@
     if(cambios[p.id]) Object.assign(p,cambios[p.id]);
   });
 
+  // Para esta categoría sólo existen las combinaciones con precio explícito en la lista.
+  window.CH_PRODUCTOS = window.CH_PRODUCTOS.filter(p=>p.categoria!=='Tranqueras de tiretas de curupay');
+
   const nuevos = [
+    {id:'P0077',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'3 cruces',medida:'4,00 m',unidad:'unidad',precio:1100000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0078',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'3 cruces',medida:'3,50 m',unidad:'unidad',precio:1055000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0079',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'2 cruces',medida:'4,00 m',unidad:'unidad',precio:828000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0080',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'2 cruces',medida:'3,50 m',unidad:'unidad',precio:806200,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0081',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'2 cruces',medida:'3,00 m',unidad:'unidad',precio:790000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0082',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'2 cruces',medida:'2,50 m',unidad:'unidad',precio:754000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0083',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'2 cruces',medida:'2,00 m',unidad:'unidad',precio:719000,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0084',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'1 cruz',medida:'1,50 m',unidad:'unidad',precio:404800,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+    {id:'P0085',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'1 cruz',medida:'1,00 m',unidad:'unidad',precio:336900,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
+
     {id:'P0129',categoria:'Mangas para cerdo',producto:'Puerta corrediza',variante:'',medida:'',unidad:'unidad',precio:268440,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
     {id:'P0130',categoria:'Mangas para cerdo',producto:'Cepo',variante:'',medida:'',unidad:'unidad',precio:318000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
     {id:'P0131',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'7,00 m',unidad:'unidad',precio:59000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false}
