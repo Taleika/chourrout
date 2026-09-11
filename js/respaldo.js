@@ -23,6 +23,17 @@ async function leerColeccion(nombre){
   const snap=await getDocs(collection(db,nombre));
   return snap.docs.map(d=>plano({id:d.id,...d.data()}));
 }
+function num(v){return Number(v)||0;}
+function totalPresupuesto(p){
+  let total=0;
+  (p.items||[]).forEach(i=>{
+    let neto=num(i.cantidad)*num(i.precioActual??i.precio)*(1+num(i.extra));
+    if(i.tiretas){neto+=num(i.dibujos)*77000+num(i.cuadrados)*106000;}
+    const iva=(p.ivaGlobal??'0')==='individual'?num(i.ivaActual):num(p.ivaGlobal??0);
+    total+=neto+(iva===21?neto*.21:iva===10.5?neto*.105:0);
+  });
+  return total;
+}
 
 async function exportarJson(){
   const boton=document.getElementById('exportarJson');
@@ -58,6 +69,15 @@ async function exportarCsvProductos(){
   descargar(`chourrout-productos-${fechaArchivo()}.csv`,[cab,...filas].map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv;charset=utf-8');
 }
 
+async function exportarCsvPresupuestos(){
+  const presupuestos=await leerColeccion('presupuestos');
+  presupuestos.sort((a,b)=>String(a.numero||'').localeCompare(String(b.numero||''),'es',{numeric:true}));
+  const cab=['Número','Fecha','Cliente','CUIT','Teléfono','Estado','Ítems','IVA','Total','Observaciones'];
+  const filas=presupuestos.map(p=>[p.numero,p.fecha,p.clienteNombre,p.clienteCuit,p.clienteTelefono,p.estado,(p.items||[]).length,p.ivaGlobal,totalPresupuesto(p),p.observaciones]);
+  descargar(`chourrout-presupuestos-${fechaArchivo()}.csv`,[cab,...filas].map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv;charset=utf-8');
+}
+
 document.getElementById('exportarJson')?.addEventListener('click',exportarJson);
 document.getElementById('exportarClientesCsv')?.addEventListener('click',()=>exportarCsvClientes().catch(e=>alert(`No se pudo exportar clientes: ${e.message||e}`)));
 document.getElementById('exportarProductosCsv')?.addEventListener('click',()=>exportarCsvProductos().catch(e=>alert(`No se pudo exportar productos: ${e.message||e}`)));
+document.getElementById('exportarPresupuestosCsv')?.addEventListener('click',()=>exportarCsvPresupuestos().catch(e=>alert(`No se pudo exportar presupuestos: ${e.message||e}`)));
