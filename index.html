@@ -5,75 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chourrout Hnos. | Presupuestos</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .dashboard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.dash-card{background:#fff;border:1px solid #e7e7e7;border-radius:14px;padding:16px 18px}.dash-card span{display:block;color:#777;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.dash-card strong{display:block;font-size:28px;margin-top:5px}.dash-card small{display:block;color:#888;margin-top:4px}.dashboard-panel{background:#fff;border:1px solid #e7e7e7;border-radius:14px;overflow:hidden}.dashboard-panel .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid #eee}.dashboard-panel .panel-head h3{margin:0}.dashboard-panel .panel-head p{margin:3px 0 0;color:#777}.dashboard-status{font-size:12px;color:#777}.badge-draft{background:#fff3cd;color:#7b5b00}@media(max-width:900px){.dashboard-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.dashboard-grid{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">
-          <div class="brand-ch">CH</div>
-          <div class="brand-name">Chourrout Hnos.</div>
-        </div>
-        <div class="brand-subtitle">Sistema de presupuestos</div>
-      </div>
-
+      <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
       <nav class="menu">
         <a class="menu-item active" href="index.html"><span class="menu-icon">⌂</span>Inicio</a>
-        <a class="menu-item" href="presupuestos/nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+        <a class="menu-item" href="presupuestos/nuevo.html?nuevo=1"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
         <a class="menu-item" href="presupuestos/historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
         <a class="menu-item" href="admin/productos.html"><span class="menu-icon">▦</span>Productos</a>
         <a class="menu-item" href="admin/clientes.html"><span class="menu-icon">♙</span>Clientes</a>
         <a class="menu-item" href="admin/configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
       </nav>
-
-      <div class="sidebar-footer">
-        Chourrout Hnos. S.A.<br />
-        Ruta 205 Km 181,5<br />
-        Saladillo, Buenos Aires
-      </div>
+      <div class="sidebar-footer">Chourrout Hnos. S.A.<br />Ruta 205 Km 181,5<br />Saladillo, Buenos Aires</div>
     </aside>
 
     <main class="main">
       <div class="topbar">
-        <div class="welcome">
-          <span class="eyebrow">Chourrout Hnos.</span>
-          <h1>Panel principal</h1>
-          <p>Gestión de presupuestos, productos y clientes.</p>
-        </div>
-        <div class="user">
-          <div class="user-avatar">CH</div>
-          <div class="user-info"><strong>Administrador</strong><span>Chourrout Hnos.</span></div>
-        </div>
+        <div class="welcome"><span class="eyebrow">Chourrout Hnos.</span><h1>Panel principal</h1><p>Gestión de presupuestos, productos y clientes.</p></div>
+        <div class="user"><div class="user-avatar">CH</div><div class="user-info"><strong>Administrador</strong><span>Chourrout Hnos.</span></div></div>
       </div>
 
       <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">Presupuestos</span>
-          <h2>Crear un nuevo presupuesto</h2>
-          <p>Seleccioná el cliente, agregá productos, definí cantidades, IVA y adicionales. El sistema calculará automáticamente cada total.</p>
-        </div>
-        <a class="btn btn-light" href="presupuestos/nuevo.html">＋ Nuevo presupuesto</a>
+        <div class="hero-copy"><span class="eyebrow">Presupuestos</span><h2>Crear un nuevo presupuesto</h2><p>Seleccioná el cliente, agregá productos, definí cantidades, IVA y adicionales. El sistema calculará automáticamente cada total.</p></div>
+        <a class="btn btn-light" href="presupuestos/nuevo.html?nuevo=1">＋ Nuevo presupuesto</a>
       </section>
 
-      <div class="section-head">
-        <div><h3>Accesos rápidos</h3><p>Todo lo necesario para trabajar desde un solo lugar.</p></div>
-      </div>
+      <div class="section-head"><div><h3>Resumen general</h3><p>Datos reales sincronizados con Firebase.</p></div><span class="dashboard-status" id="dashboardEstado">Cargando datos...</span></div>
+      <section class="dashboard-grid">
+        <div class="dash-card"><span>Productos</span><strong id="dashProductos">—</strong><small>Artículos en la base</small></div>
+        <div class="dash-card"><span>Precios pendientes</span><strong id="dashPendientes">—</strong><small>Productos a revisar</small></div>
+        <div class="dash-card"><span>Clientes</span><strong id="dashClientes">—</strong><small>Clientes cargados</small></div>
+        <div class="dash-card"><span>Definitivos</span><strong id="dashDefinitivos">—</strong><small>Presupuestos cerrados</small></div>
+        <div class="dash-card"><span>Borradores</span><strong id="dashBorradores">—</strong><small>Presupuestos activos</small></div>
+        <div class="dash-card"><span>Total presupuestado</span><strong id="dashTotal">—</strong><small>Suma de presupuestos definitivos</small></div>
+      </section>
 
+      <section class="dashboard-panel">
+        <div class="panel-head"><div><h3>Últimos presupuestos</h3><p>Los cinco movimientos más recientes.</p></div><a class="btn btn-outline" href="presupuestos/historial.html">Ver historial</a></div>
+        <div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th></tr></thead><tbody id="ultimosPresupuestos"><tr><td colspan="5" class="muted" style="padding:18px">Cargando...</td></tr></tbody></table></div>
+      </section>
+
+      <div class="section-head"><div><h3>Accesos rápidos</h3><p>Todo lo necesario para trabajar desde un solo lugar.</p></div></div>
       <section class="cards">
         <a class="card" href="presupuestos/historial.html"><div class="card-icon">▤</div><h4>Presupuestos</h4><p>Consultar presupuestos anteriores, duplicarlos o volver a generar el PDF.</p><div class="card-arrow">→</div></a>
         <a class="card" href="admin/productos.html"><div class="card-icon">▦</div><h4>Lista de productos</h4><p>Administrar productos, precios, IVA, medidas y disponibilidad.</p><div class="card-arrow">→</div></a>
         <a class="card" href="admin/clientes.html"><div class="card-icon">♙</div><h4>Clientes</h4><p>Guardar datos de clientes y consultar su historial de presupuestos.</p><div class="card-arrow">→</div></a>
         <a class="card" href="admin/configuracion.html"><div class="card-icon">⚙</div><h4>Configuración</h4><p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p><div class="card-arrow">→</div></a>
       </section>
-
-      <div class="section-head"><div><h3>Resumen</h3><p>Estado inicial de la base de productos.</p></div></div>
-      <section class="stats">
-        <div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value">128</div><div class="stat-note">Base inicial normalizada</div></div>
-        <div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending">35</div><div class="stat-note">Cargados provisoriamente en $999</div></div>
-        <div class="stat"><div class="stat-label">IVA disponible</div><div class="stat-value">21% / 10,5%</div><div class="stat-note">Configurable por producto</div></div>
-      </section>
     </main>
   </div>
+  <script type="module" src="js/dashboard.js"></script>
   <script type="module">import { protegerPagina } from './js/auth.js'; protegerPagina();</script>
 </body>
 </html>
