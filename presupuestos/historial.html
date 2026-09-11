@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presupuestos | Chourrout Hnos.</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
+    <nav class="menu">
+      <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
+      <a class="menu-item" href="nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+      <a class="menu-item active" href="historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
+      <a class="menu-item" href="../admin/productos.html"><span class="menu-icon">▦</span>Productos</a>
+      <a class="menu-item" href="../admin/clientes.html"><span class="menu-icon">♙</span>Clientes</a>
+      <a class="menu-item" href="../admin/configuracion.html"><span class="menu-icon">⚙</span>Configuración</a>
+    </nav>
+    <div class="sidebar-footer">Chourrout Hnos. S.A.<br>Ruta 205 Km 181,5<br>Saladillo, Buenos Aires</div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><div class="welcome"><span class="eyebrow">Presupuestos</span><h1>Historial</h1><p>Consultá borradores y presupuestos guardados definitivamente.</p></div><a class="btn btn-primary" href="nuevo.html">＋ Nuevo presupuesto</a></div>
+    <div class="toolbar"><input id="buscarPresupuesto" class="control" type="search" placeholder="Buscar por número o cliente..."><select id="filtroEstado" class="control"><option value="">Todos los estados</option><option value="borrador">Borrador</option><option value="definitivo">Guardado definitivo</option></select><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Ítems</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="tablaPresupuestos"></tbody></table></div><div class="pagination"><span id="contadorPresupuestos">0 presupuestos</span></div></section>
+  </main>
+</div>
+<script src="../js/historial.js"></script>
+</body>
+</html>
