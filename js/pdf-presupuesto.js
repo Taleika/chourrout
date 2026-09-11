@@ -52,6 +52,12 @@
     });
   }
 
+  async function obtenerLogoPdf(){
+    if(window.CH_LOGO_DATA)return window.CH_LOGO_DATA;
+    if(window.CH_LOGO_SVG)return svgToPngDataUrl(window.CH_LOGO_SVG,1600);
+    throw new Error('Sin logo disponible');
+  }
+
   function imprimirComoPdf(){
     const c=config();
     const numero=document.getElementById('numeroPresupuesto').textContent.trim();
@@ -62,10 +68,12 @@
     const obs=document.getElementById('observaciones').value.trim();
     const totals=calcularTotales();
     const filas=items.map(item=>{ const neto=calcItem(item),iva=ivaItem(item),v21=iva===21?neto*.21:0,v105=iva===10.5?neto*.105:0; return `<tr><td class="num">${htmlEscape(cantidadTexto(item.cantidad))}</td><td>${htmlEscape(detallePdf(item))}</td><td class="num">${htmlEscape(money(item.precioActual))}</td><td class="num">${htmlEscape(money(neto))}</td><td class="num">${v21?htmlEscape(money(v21)):''}</td><td class="num">${v105?htmlEscape(money(v105)):''}</td><td class="num final">${htmlEscape(money(neto+v21+v105))}</td></tr>`; }).join('');
-    const logo=window.CH_LOGO_SVG||`<div style="font-size:34px;font-weight:900;color:red">CH <span style="color:#111">${htmlEscape(c.empresaNombre)}</span></div>`;
+    const logo=window.CH_LOGO_DATA
+      ? `<img src="${window.CH_LOGO_DATA}" alt="${htmlEscape(c.empresaNombre)}" style="display:block;max-width:285px;width:auto;height:auto;max-height:76px">`
+      : (window.CH_LOGO_SVG||`<div style="font-size:34px;font-weight:900;color:red">CH <span style="color:#111">${htmlEscape(c.empresaNombre)}</span></div>`);
     const w=window.open('','_blank'); if(!w){alert('El navegador bloqueó la ventana de impresión. Habilitá las ventanas emergentes y volvé a intentar.');return;}
     w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Presupuesto CH ${htmlEscape(numero)}</title><style>
-      @page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;font-size:11px;background:#fff}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid #ef1b1b;padding-bottom:10px}.logo{width:285px}.logo svg{width:100%;height:auto;display:block}.tag{text-align:right}.tag .t{font-size:24px;font-weight:900}.tag .n{font-size:12px;color:#666;margin-top:3px}.contact{color:#555;font-size:9px;line-height:1.5;margin:8px 0 14px}.meta{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;background:#f5f5f5;border-radius:8px;padding:10px 12px;margin-bottom:12px}.meta b{display:block;font-size:8px;text-transform:uppercase;color:#777;margin-bottom:2px}.meta span{font-size:11px;font-weight:700}.titlebar{display:flex;justify-content:space-between;align-items:center;margin:8px 0}.titlebar h2{margin:0;font-size:17px}.pill{background:#111;color:#fff;border-radius:999px;padding:5px 10px;font-weight:700;font-size:9px}table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;border:1px solid #ddd;border-radius:7px;overflow:hidden}th{background:#111;color:#fff;text-transform:uppercase;font-size:8px;letter-spacing:.3px;padding:7px 6px;text-align:left}td{padding:7px 6px;border-bottom:1px solid #e5e5e5;vertical-align:middle}tbody tr:nth-child(even){background:#fafafa}.num{text-align:right}.final{font-weight:700}.c1{width:8%}.c2{width:35%}.c3{width:12%}.c4{width:13%}.c5,.c6{width:10%}.c7{width:12%}.summary{display:flex;justify-content:flex-end;margin-top:12px}.sumcard{width:350px;background:#111;color:#fff;border-radius:9px;padding:12px 14px}.sumrow{display:flex;justify-content:space-between;padding:3px 0}.sumrow.total{border-top:1px solid #555;margin-top:5px;padding-top:8px;font-size:17px;font-weight:900}.sumrow.total strong{color:#fff}.obs{margin-top:12px;background:#f7f7f7;border-left:4px solid #ef1b1b;padding:9px 11px}.obs b{display:block;margin-bottom:3px}.foot{position:fixed;left:10mm;right:10mm;bottom:4mm;display:flex;justify-content:space-between;gap:20px;color:#777;font-size:8px}.foot span:last-child{text-align:right}
+      @page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;font-size:11px;background:#fff}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid #ef1b1b;padding-bottom:10px}.logo{width:285px}.logo svg,.logo img{max-width:100%;height:auto;display:block}.tag{text-align:right}.tag .t{font-size:24px;font-weight:900}.tag .n{font-size:12px;color:#666;margin-top:3px}.contact{color:#555;font-size:9px;line-height:1.5;margin:8px 0 14px}.meta{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;background:#f5f5f5;border-radius:8px;padding:10px 12px;margin-bottom:12px}.meta b{display:block;font-size:8px;text-transform:uppercase;color:#777;margin-bottom:2px}.meta span{font-size:11px;font-weight:700}.titlebar{display:flex;justify-content:space-between;align-items:center;margin:8px 0}.titlebar h2{margin:0;font-size:17px}.pill{background:#111;color:#fff;border-radius:999px;padding:5px 10px;font-weight:700;font-size:9px}table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;border:1px solid #ddd;border-radius:7px;overflow:hidden}th{background:#111;color:#fff;text-transform:uppercase;font-size:8px;letter-spacing:.3px;padding:7px 6px;text-align:left}td{padding:7px 6px;border-bottom:1px solid #e5e5e5;vertical-align:middle}tbody tr:nth-child(even){background:#fafafa}.num{text-align:right}.final{font-weight:700}.c1{width:8%}.c2{width:35%}.c3{width:12%}.c4{width:13%}.c5,.c6{width:10%}.c7{width:12%}.summary{display:flex;justify-content:flex-end;margin-top:12px}.sumcard{width:350px;background:#111;color:#fff;border-radius:9px;padding:12px 14px}.sumrow{display:flex;justify-content:space-between;padding:3px 0}.sumrow.total{border-top:1px solid #555;margin-top:5px;padding-top:8px;font-size:17px;font-weight:900}.sumrow.total strong{color:#fff}.obs{margin-top:12px;background:#f7f7f7;border-left:4px solid #ef1b1b;padding:9px 11px}.obs b{display:block;margin-bottom:3px}.foot{position:fixed;left:10mm;right:10mm;bottom:4mm;display:flex;justify-content:space-between;gap:20px;color:#777;font-size:8px}.foot span:last-child{text-align:right}
     </style></head><body><div class="top"><div class="logo">${logo}</div><div class="tag"><div class="t">PRESUPUESTO</div><div class="n">Nº ${htmlEscape(numero)}</div></div></div><div class="contact"><strong>${htmlEscape(c.empresaNombre)}</strong><br>${htmlEscape(contactoEmpresa(c))}</div><div class="meta"><div><b>Cliente</b><span>${htmlEscape(cliente||'-')}</span></div><div><b>CUIT</b><span>${htmlEscape(cuit||'-')}</span></div><div><b>Teléfono</b><span>${htmlEscape(telefono||'-')}</span></div><div><b>Fecha</b><span>${htmlEscape(fechaAR(fecha))}</span></div></div><div class="titlebar"><h2>Detalle</h2><div class="pill">${htmlEscape(ivaTexto())}</div></div><table><thead><tr><th class="c1">Cantidad</th><th class="c2">Detalle</th><th class="c3">Unitario</th><th class="c4">Subtotal</th><th class="c5">21%</th><th class="c6">10,5%</th><th class="c7">Final</th></tr></thead><tbody>${filas}</tbody></table><div class="summary"><div class="sumcard"><div class="sumrow"><span>Subtotal</span><strong>${htmlEscape(money(totals.subtotal))}</strong></div>${totals.iva21?`<div class="sumrow"><span>IVA 21%</span><strong>${htmlEscape(money(totals.iva21))}</strong></div>`:''}${totals.iva105?`<div class="sumrow"><span>IVA 10,5%</span><strong>${htmlEscape(money(totals.iva105))}</strong></div>`:''}<div class="sumrow total"><span>TOTAL</span><strong>${htmlEscape(money(totals.total))}</strong></div></div></div>${obs?`<div class="obs"><b>Observaciones</b>${htmlEscape(obs)}</div>`:''}<div class="foot"><span>${htmlEscape(c.empresaNombre)}</span><span>${htmlEscape([validezTexto(c),ivaTexto()].filter(Boolean).join(' · '))}</span></div><script>window.onload=function(){setTimeout(function(){window.print();},250)}<\/script></body></html>`);
     w.document.close();
   }
@@ -82,8 +90,15 @@
     const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),margin=10;
     const red=[239,27,27],black=[18,18,18],gray=[105,105,105],light=[246,246,246];
 
-    try{ const logoPng=await svgToPngDataUrl(window.CH_LOGO_SVG,1600); doc.addImage(logoPng,'PNG',margin,9,92,17); }
-    catch(e){ doc.setTextColor(...red);doc.setFont('helvetica','bold');doc.setFontSize(28);doc.text('CH',margin,21);doc.setTextColor(...black);doc.setFontSize(17);doc.text(c.empresaNombre,31,20); }
+    try{
+      const logoPng=await obtenerLogoPdf();
+      const props=doc.getImageProperties(logoPng);
+      const logoH=19;
+      const logoW=logoH*(props.width/props.height);
+      doc.addImage(logoPng,'PNG',margin,8,logoW,logoH);
+    }catch(e){
+      doc.setTextColor(...red);doc.setFont('helvetica','bold');doc.setFontSize(28);doc.text('CH',margin,21);doc.setTextColor(...black);doc.setFontSize(17);doc.text(c.empresaNombre,31,20);
+    }
 
     doc.setDrawColor(...red);doc.setLineWidth(1.1);doc.line(margin,31,pageW-margin,31);
     const numero=document.getElementById('numeroPresupuesto').textContent.trim();
