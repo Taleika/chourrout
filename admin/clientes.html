@@ -26,11 +26,11 @@
       <button class="btn btn-primary" id="nuevoCliente">＋ Agregar cliente</button>
     </div>
     <div class="toolbar"><input id="buscarCliente" class="control" type="search" placeholder="Buscar por nombre, CUIT o teléfono..."><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
-    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nombre / Razón social</th><th>CUIT</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr></thead><tbody id="tablaClientes"></tbody></table></div><div class="pagination"><span id="contadorClientes">0 clientes</span></div></section>
+    <section class="panel"><div class="table-wrap"><table><thead><tr><th>Nombre / Razón social</th><th>CUIT</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr></thead><tbody id="tablaClientes"></tbody></table></div><div class="pagination"><span id="contadorClientes">Cargando clientes...</span></div></section>
   </main>
 </div>
 <div class="modal-backdrop" id="modalCliente"><div class="modal"><div class="modal-head"><h3 id="tituloCliente">Nuevo cliente</h3><button class="icon-btn" id="cerrarCliente">✕</button></div><div class="modal-body"><div class="modal-grid"><div class="field full"><label>Nombre / Razón social</label><input class="control" id="cNombre"></div><div class="field"><label>CUIT</label><input class="control" id="cCuit"></div><div class="field"><label>Teléfono</label><input class="control" id="cTelefono"></div><div class="field full"><label>Email</label><input class="control" id="cEmail" type="email"></div><div class="field full"><label>Observaciones</label><input class="control" id="cObservaciones"></div></div></div><div class="modal-foot"><button class="btn btn-outline" id="cancelarCliente">Cancelar</button><button class="btn btn-primary" id="guardarCliente">Guardar cliente</button></div></div></div>
-<script src="../js/clientes.js"></script>
+<script type="module" src="../js/clientes-firestore.js"></script>
 <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
