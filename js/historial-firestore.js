@@ -20,17 +20,6 @@ async function cargarConfiguracion(){
   }
 }
 
-async function migrarLocales(){
-  const locales=leer(SAVED_KEY,[]);if(!Array.isArray(locales)||!locales.length)return;
-  const snap=await getDocs(collection(db,'presupuestos'));
-  const existentes=new Set(snap.docs.map(d=>d.id));
-  for(const p of locales){
-    if(!p?.numero)continue;
-    const id=idPresupuesto(p.numero);if(existentes.has(id))continue;
-    await setDoc(doc(db,'presupuestos',id),{...p,preciosCongelados:p.estado==='definitivo',migradoDesdeLocal:true,actualizadoServidor:serverTimestamp()});
-  }
-}
-
 async function cargarYActualizarBorradores(){
   const [snapPres,snapProd]=await Promise.all([getDocs(collection(db,'presupuestos')),getDocs(collection(db,'productos'))]);
   const mapaProductos=new Map(snapProd.docs.map(d=>{const p=d.data();return [d.id,{...p,id:d.id}];}));
@@ -87,11 +76,11 @@ function aplicarFiltroDesdeUrl(){
 }
 
 try{
-  await Promise.all([cargarConfiguracion(),migrarLocales()]);
+  await cargarConfiguracion();
   await cargarYActualizarBorradores();
 }catch(error){console.error('No se pudo sincronizar el historial con Firebase.',error);}
 
-await import('./historial.js');
+await import('./historial.js?v=20260911-1344');
 aplicarFiltroDesdeUrl();
 agregarBotonesEliminar();
 new MutationObserver(agregarBotonesEliminar).observe(tabla,{childList:true,subtree:true});
