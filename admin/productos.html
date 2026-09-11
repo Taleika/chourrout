@@ -12,7 +12,7 @@
       <div class="brand"><div class="brand-mark"><div class="brand-ch">CH</div><div class="brand-name">Chourrout Hnos.</div></div><div class="brand-subtitle">Sistema de presupuestos</div></div>
       <nav class="menu">
         <a class="menu-item" href="../index.html"><span class="menu-icon">⌂</span>Inicio</a>
-        <a class="menu-item" href="../presupuestos/nuevo.html"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
+        <a class="menu-item" href="../presupuestos/nuevo.html?nuevo=1"><span class="menu-icon">＋</span>Nuevo presupuesto</a>
         <a class="menu-item" href="../presupuestos/historial.html"><span class="menu-icon">▤</span>Presupuestos</a>
         <a class="menu-item active" href="productos.html"><span class="menu-icon">▦</span>Productos</a>
         <a class="menu-item" href="clientes.html"><span class="menu-icon">♙</span>Clientes</a>
@@ -25,7 +25,7 @@
       <div class="notice"><div><strong><span id="noticePendientes">0</span> productos tienen precio pendiente.</strong> Se muestran con $999 para identificarlos y corregirlos antes de presupuestar.</div><button class="btn btn-outline" id="verPendientes">Ver pendientes</button></div>
       <section class="stats"><div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value" id="totalProductos">0</div><div class="stat-note">Base maestra en Firebase</div></div><div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending" id="totalPendientes">0</div><div class="stat-note">Requieren revisión</div></div><div class="stat"><div class="stat-label">IVA</div><div class="stat-value">Sin IVA</div><div class="stat-note">Opcional: 21% o 10,5%</div></div></section>
       <div class="section-head"><div><h3>Lista de productos</h3><p>Buscá, filtrá o editá cualquier artículo.</p></div></div>
-      <div class="toolbar"><input id="buscar" class="control" type="search" placeholder="Buscar producto, medida o categoría..." /><select id="categoria" class="control"><option value="">Todas las categorías</option></select><button id="mostrarTodos" class="btn btn-outline">Mostrar todos</button></div>
+      <div class="toolbar"><input id="buscar" class="control" type="search" placeholder="Buscar producto, medida o categoría..." /><select id="categoria" class="control"><option value="">Todas las categorías</option></select><select id="filtroEstadoProducto" class="control"><option value="">Todos los estados</option><option value="Activo">Activos</option><option value="Inactivo">Inactivos</option></select><select id="filtroPrecioProducto" class="control"><option value="">Todos los precios</option><option value="pendiente">Precio pendiente</option><option value="ok">Precio cargado</option></select><button id="mostrarTodos" class="btn btn-outline">Limpiar filtros</button></div>
       <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Categoría</th><th>Producto</th><th>Variante / medida</th><th>Unidad</th><th>Precio</th><th>IVA</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaProductos"></tbody></table></div><div class="pagination"><span id="contadorFilas">Cargando productos...</span></div></section>
     </main>
   </div>
@@ -33,6 +33,7 @@
   <script src="../js/data-productos.js"></script>
   <script src="../js/actualizacion-precios.js"></script>
   <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
-  <script type="module" src="../js/productos-firestore.js"></script>
+  <script type="module" src="../js/productos-firestore.js?v=20260911-1355"></script>
+  <script src="../js/productos-comodidad.js?v=20260911-1355"></script>
 </body>
 </html>
