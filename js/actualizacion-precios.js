@@ -27,7 +27,11 @@
     P0039:{categoria:'Cargadores para vacunos',producto:'Cargador',variante:'3 patas',medida:'4,00 m de piso',unidad:'unidad',precio:2272000,iva:0,estado:'Activo',pendiente:false},
     P0040:{categoria:'Cargadores para vacunos',producto:'Cargador',variante:'4 patas',medida:'4,00 m de piso',unidad:'unidad',precio:2563000,iva:0,estado:'Activo',pendiente:false},
     P0041:{categoria:'Cargadores para vacunos',producto:'Cargador',variante:'Con descanso',medida:'5,00 m',unidad:'unidad',precio:3022300,iva:0,estado:'Activo',pendiente:false},
-    P0042:{categoria:'Mangas para cerdo',producto:'Manga para cerdo',variante:'Por metro',medida:'',unidad:'metro lineal',precio:268440,iva:0,estado:'Activo',pendiente:false}
+    P0042:{estado:'Inactivo'},
+
+    P0101:{categoria:'Mangas para cerdo',producto:'Manga para cerdo',variante:'Por metro',medida:'',unidad:'metro lineal',precio:268440,iva:0,estado:'Activo',pendiente:false},
+    P0102:{categoria:'Mangas para cerdo',producto:'Puerta corrediza',variante:'',medida:'',unidad:'unidad',precio:268440,iva:0,estado:'Activo',pendiente:false},
+    P0103:{categoria:'Mangas para cerdo',producto:'Cepo',variante:'',medida:'',unidad:'unidad',precio:318000,iva:0,estado:'Activo',pendiente:false}
   };
 
   window.CH_PRODUCTOS.forEach(p=>{
@@ -48,8 +52,6 @@
     {id:'P0084',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'1 cruz',medida:'1,50 m',unidad:'unidad',precio:404800,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
     {id:'P0085',categoria:'Tranqueras de tiretas de curupay',producto:'Tranquera de tiretas de curupay',variante:'1 cruz',medida:'1,00 m',unidad:'unidad',precio:336900,iva:0,estado:'Activo',pendiente:false,observaciones:'Producto normalizado desde lista provista.',origen:'Actualización manual',tranquera:false,tiretas:true},
 
-    {id:'P0129',categoria:'Mangas para cerdo',producto:'Puerta corrediza',variante:'',medida:'',unidad:'unidad',precio:268440,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
-    {id:'P0130',categoria:'Mangas para cerdo',producto:'Cepo',variante:'',medida:'',unidad:'unidad',precio:318000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false},
     {id:'P0131',categoria:'Postes de eucaliptus',producto:'Poste de eucaliptus',variante:'',medida:'7,00 m',unidad:'unidad',precio:59000,iva:0,estado:'Activo',pendiente:false,observaciones:'Precio actualizado desde lista provista.',origen:'Actualización manual',tranquera:false}
   ];
 
