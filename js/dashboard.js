@@ -1,6 +1,8 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
+const DRAFT_KEY='chourrout_presupuesto_actual';
+
 function dinero(v){
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(Number(v)||0);
 }
@@ -30,6 +32,24 @@ function totalPresupuesto(p){
   return total;
 }
 function html(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function fechaOrden(p){return String(p.actualizadoEn||p.fecha||'');}
+
+function prepararContinuarUltimo(borradores){
+  const btn=document.getElementById('continuarUltimo');
+  const texto=document.getElementById('ultimoBorradorTexto');
+  if(!btn||!texto)return;
+  const ultimo=[...borradores].sort((a,b)=>fechaOrden(b).localeCompare(fechaOrden(a)))[0];
+  if(!ultimo){btn.hidden=true;texto.hidden=true;return;}
+  btn.hidden=false;
+  texto.hidden=false;
+  const cliente=ultimo.clienteNombre||'Sin cliente';
+  texto.textContent=`Último en curso: Nº ${ultimo.numero||'—'} · ${cliente} · ${dinero(totalPresupuesto(ultimo))}`;
+  btn.textContent=`↩ Continuar Nº ${ultimo.numero||'—'}`;
+  btn.onclick=()=>{
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(ultimo));
+    location.href='presupuestos/nuevo.html';
+  };
+}
 
 async function cargarDashboard(){
   const estado=document.getElementById('dashboardEstado');
@@ -55,10 +75,12 @@ async function cargarDashboard(){
     document.getElementById('dashBorradores').textContent=borradores.length;
     document.getElementById('dashTotal').textContent=dinero(totalDefinitivos);
 
-    const ultimos=[...presupuestos].sort((a,b)=>String(b.actualizadoEn||b.fecha||'').localeCompare(String(a.actualizadoEn||a.fecha||''))).slice(0,5);
+    prepararContinuarUltimo(borradores);
+
+    const ultimos=[...presupuestos].sort((a,b)=>fechaOrden(b).localeCompare(fechaOrden(a))).slice(0,5);
     const tbody=document.getElementById('ultimosPresupuestos');
     if(!ultimos.length){
-      tbody.innerHTML='<tr><td colspan="5" class="muted" style="padding:18px">Todavía no hay presupuestos guardados.</td></tr>';
+      tbody.innerHTML='<tr><td colspan="6" class="muted" style="padding:18px">Todavía no hay presupuestos guardados.</td></tr>';
     }else{
       tbody.innerHTML=ultimos.map(p=>`<tr>
         <td><strong>${html(p.numero||'—')}</strong></td>
@@ -66,7 +88,17 @@ async function cargarDashboard(){
         <td>${html(p.clienteNombre||'Sin cliente')}</td>
         <td><span class="badge ${p.estado==='definitivo'?'badge-ok':'badge-draft'}">${p.estado==='definitivo'?'Definitivo':'Borrador'}</span></td>
         <td class="money"><strong>${html(dinero(totalPresupuesto(p)))}</strong></td>
+        <td>${p.estado==='definitivo'
+          ? `<a class="budget-open" href="presupuestos/historial.html?q=${encodeURIComponent(p.numero||'')}">Ver</a>`
+          : `<button class="budget-open js-continuar" data-numero="${html(p.numero||'')}" type="button" style="border:0;background:none;cursor:pointer;padding:0">Continuar</button>`}
+        </td>
       </tr>`).join('');
+      tbody.querySelectorAll('.js-continuar').forEach(btn=>btn.addEventListener('click',()=>{
+        const p=borradores.find(x=>String(x.numero)===String(btn.dataset.numero));
+        if(!p)return;
+        localStorage.setItem(DRAFT_KEY,JSON.stringify(p));
+        location.href='presupuestos/nuevo.html';
+      }));
     }
     estado.textContent='Datos sincronizados con Firebase';
   }catch(error){
