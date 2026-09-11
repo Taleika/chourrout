@@ -1,18 +1,21 @@
 import { db } from './firebase-config.js';
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { collection, doc, getDoc, getDocs, runTransaction, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
 const DRAFT_KEY='chourrout_presupuesto_actual';
 const SAVED_KEY='chourrout_presupuestos_guardados';
 const CLIENTES_KEY='chourrout_clientes';
 const ADD_QUEUE_KEY='chourrout_productos_para_agregar';
 const PENDING_ADD_KEY='chourrout_producto_para_agregar';
+const NUMERACION_REF=doc(db,'configuracion','numeracionPresupuestos');
 let catalogoFirestore=[];
 let syncTimer=null;
+let reservandoNumero=null;
 
 function leerJson(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch(e){return fallback;}}
 function escribirJson(key,value){localStorage.setItem(key,JSON.stringify(value));}
-function nuevoNumero(){return String(Date.now()).slice(-6);}
-function idPresupuesto(numero){return `P-${String(numero||nuevoNumero()).replace(/[^a-zA-Z0-9_-]/g,'')}`;}
+function idPresupuesto(numero){return `P-${String(numero||'').replace(/[^a-zA-Z0-9_-]/g,'')}`;}
+function esNumeroCorrelativo(numero){return /^\d{6}$/.test(String(numero||''));}
+function formatearNumero(n){return String(Math.max(0,Number(n)||0)).padStart(6,'0');}
 
 function iniciarPresupuestoVacioSiCorresponde(){
   const url=new URL(location.href);
@@ -22,6 +25,38 @@ function iniciarPresupuestoVacioSiCorresponde(){
   localStorage.removeItem(PENDING_ADD_KEY);
   url.searchParams.delete('nuevo');
   history.replaceState({},'',url.pathname+(url.search||'')+(url.hash||''));
+}
+
+async function reservarNumeroCorrelativo(){
+  if(reservandoNumero)return reservandoNumero;
+  reservandoNumero=runTransaction(db,async tx=>{
+    const contadorSnap=await tx.get(NUMERACION_REF);
+    let ultimo=contadorSnap.exists()?Number(contadorSnap.data().ultimo||0):0;
+    let candidato=ultimo+1;
+
+    // Evita colisiones con presupuestos existentes, incluidos los de pruebas anteriores.
+    while(candidato<1000000){
+      const numero=formatearNumero(candidato);
+      const existente=await tx.get(doc(db,'presupuestos',idPresupuesto(numero)));
+      if(!existente.exists()){
+        tx.set(NUMERACION_REF,{ultimo:candidato,actualizadoEn:serverTimestamp()},{merge:true});
+        return numero;
+      }
+      candidato++;
+    }
+    throw new Error('Se agotó el rango de numeración de presupuestos.');
+  }).finally(()=>{reservandoNumero=null;});
+  return reservandoNumero;
+}
+
+async function asegurarNumero(snapshot){
+  if(snapshot&&esNumeroCorrelativo(snapshot.numero))return snapshot;
+  const numero=await reservarNumeroCorrelativo();
+  const actualizado={...snapshot,numero,actualizadoEn:new Date().toISOString()};
+  escribirJson(DRAFT_KEY,actualizado);
+  const numeroDom=document.getElementById('numeroPresupuesto');
+  if(numeroDom)numeroDom.textContent=numero;
+  return actualizado;
 }
 
 function enteroNoNegativo(valor){
@@ -44,7 +79,6 @@ function normalizarInputsCantidad(disparar=false){
   document.querySelectorAll('.js-cantidad').forEach(input=>normalizarInputCantidad(input,disparar));
 }
 
-// Se ejecuta en captura para que el código del presupuesto siempre reciba un entero.
 document.addEventListener('input',e=>{
   const input=e.target;
   if(!input?.classList?.contains('js-cantidad'))return;
@@ -86,7 +120,7 @@ function prepararBorradorConPreciosActuales(){
   if(draft.estado==='definitivo'){
     const copia=JSON.parse(JSON.stringify(draft));
     copia.origenDefinitivo=draft.numero;
-    copia.numero=nuevoNumero();
+    copia.numero='';
     copia.estado='borrador';
     copia.actualizadoEn=new Date().toISOString();
     copia.items=(copia.items||[]).map(i=>({...i,cantidad:enteroNoNegativo(i.cantidad)}));
@@ -106,20 +140,22 @@ function prepararBorradorConPreciosActuales(){
 }
 
 async function guardarSnapshotFirestore(snapshot){
-  if(!snapshot||!snapshot.numero)return;
+  if(!snapshot)return;
   snapshot={...snapshot,items:(snapshot.items||[]).map(i=>({...i,cantidad:enteroNoNegativo(i.cantidad)}))};
+  snapshot=await asegurarNumero(snapshot);
+
   if(snapshot.estado!=='definitivo'){
     const refActual=doc(db,'presupuestos',idPresupuesto(snapshot.numero));
     const existente=await getDoc(refActual);
     if(existente.exists()&&existente.data().estado==='definitivo'){
       const viejo=snapshot.numero;
-      snapshot={...snapshot,origenDefinitivo:viejo,numero:nuevoNumero(),estado:'borrador',actualizadoEn:new Date().toISOString()};
-      escribirJson(DRAFT_KEY,snapshot);
-      const numeroDom=document.getElementById('numeroPresupuesto');if(numeroDom)numeroDom.textContent=snapshot.numero;
+      snapshot={...snapshot,origenDefinitivo:viejo,numero:'',estado:'borrador',actualizadoEn:new Date().toISOString()};
+      snapshot=await asegurarNumero(snapshot);
     }
   }
+
   const definitivo=snapshot.estado==='definitivo';
-  const payload={...snapshot,preciosCongelados:definitivo,actualizadoServidor:serverTimestamp()};
+  const payload={...snapshot,numeroCorrelativo:Number(snapshot.numero),preciosCongelados:definitivo,actualizadoServidor:serverTimestamp()};
   if(definitivo)payload.cerradoEn=serverTimestamp();
   await setDoc(doc(db,'presupuestos',idPresupuesto(snapshot.numero)),payload,{merge:false});
 
@@ -130,9 +166,12 @@ async function guardarSnapshotFirestore(snapshot){
 }
 
 async function sincronizarBorrador(){
-  const snapshot=leerJson(DRAFT_KEY,null);
+  let snapshot=leerJson(DRAFT_KEY,null);
   if(!snapshot||(!snapshot.clienteNombre&&!(snapshot.items||[]).length))return;
-  try{await guardarSnapshotFirestore(snapshot);}catch(error){console.error('No se pudo guardar el presupuesto en Firebase.',error);}
+  try{
+    snapshot=await asegurarNumero(snapshot);
+    await guardarSnapshotFirestore(snapshot);
+  }catch(error){console.error('No se pudo guardar el presupuesto en Firebase.',error);}
 }
 function programarSync(){clearTimeout(syncTimer);syncTimer=setTimeout(sincronizarBorrador,700);}
 
@@ -141,13 +180,17 @@ await Promise.all([cargarCatalogoFirestore(),cargarClientesFirestore()]);
 prepararBorradorConPreciosActuales();
 await import('./nuevo-presupuesto.js');
 
+const draftInicial=leerJson(DRAFT_KEY,null);
+const numeroDom=document.getElementById('numeroPresupuesto');
+if(numeroDom)numeroDom.textContent=esNumeroCorrelativo(draftInicial?.numero)?draftInicial.numero:'NUEVO';
+
 normalizarInputsCantidad(true);
 const itemsContenedor=document.getElementById('itemsPresupuesto');
 if(itemsContenedor){
   new MutationObserver(()=>normalizarInputsCantidad(false)).observe(itemsContenedor,{childList:true,subtree:true});
 }
 
-const nota=document.querySelector('.prototype-note');if(nota)nota.textContent='Borradores y presupuestos definitivos se guardan en Firebase. Los borradores toman los precios vigentes; al cerrar un presupuesto, sus precios quedan congelados.';
+const nota=document.querySelector('.prototype-note');if(nota)nota.textContent='Borradores y presupuestos definitivos se guardan en Firebase. La numeración es correlativa y compartida entre usuarios; los definitivos conservan sus precios históricos.';
 
 document.addEventListener('input',programarSync);
 document.addEventListener('change',programarSync);
