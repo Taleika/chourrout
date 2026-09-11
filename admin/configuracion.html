@@ -61,15 +61,16 @@
             <button class="btn btn-primary" id="exportarJson">Descargar respaldo JSON</button>
             <button class="btn btn-outline" id="exportarClientesCsv">Clientes CSV</button>
             <button class="btn btn-outline" id="exportarProductosCsv">Productos CSV</button>
+            <button class="btn btn-outline" id="exportarPresupuestosCsv">Presupuestos CSV</button>
           </div>
-          <div class="backup-state" id="estadoRespaldo">El respaldo JSON incluye productos, clientes, presupuestos y configuración.</div>
+          <div class="backup-state" id="estadoRespaldo">El respaldo JSON incluye productos, clientes, presupuestos y configuración. Los CSV permiten abrir listados directamente en Excel o Google Sheets.</div>
         </section>
       </div>
     </div>
   </main>
 </div>
-<script type="module" src="../js/configuracion.js"></script>
-<script type="module" src="../js/respaldo.js"></script>
+<script type="module" src="../js/configuracion.js?v=20260911-1355"></script>
+<script type="module" src="../js/respaldo.js?v=20260911-1355"></script>
 <script type="module">import { protegerPagina } from '../js/auth.js'; protegerPagina();</script>
 </body>
 </html>
