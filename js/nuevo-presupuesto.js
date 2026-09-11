@@ -19,14 +19,17 @@ const extrasTranquera = [
 ];
 
 const DRAFT_KEY = 'chourrout_presupuesto_actual';
+const SAVED_KEY = 'chourrout_presupuestos_guardados';
 const PENDING_ADD_KEY = 'chourrout_producto_para_agregar';
 const ADD_QUEUE_KEY = 'chourrout_productos_para_agregar';
 let items = [];
 let itemSeq = 1;
+let estadoActual = 'borrador';
 const buscar = document.getElementById('buscarProducto');
 const resultados = document.getElementById('resultadosProducto');
 const contenedor = document.getElementById('itemsPresupuesto');
 const ivaGlobal = document.getElementById('ivaGlobal');
+const estadoPresupuesto = document.getElementById('estadoPresupuesto');
 
 function dinero(v){
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:2}).format(v || 0);
@@ -41,17 +44,40 @@ function hoy(){
   return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
 }
 
-function guardarDraft(){
-  const draft = {
+function actualizarEstado(){
+  if(estadoActual==='definitivo'){
+    estadoPresupuesto.textContent='Guardado definitivo';
+    estadoPresupuesto.className='budget-status status-final';
+  } else {
+    estadoPresupuesto.textContent='Borrador';
+    estadoPresupuesto.className='budget-status status-draft';
+  }
+}
+
+function marcarComoBorrador(){
+  if(estadoActual!=='borrador'){
+    estadoActual='borrador';
+    actualizarEstado();
+  }
+}
+
+function snapshotPresupuesto(estado='borrador'){
+  return {
+    numero:document.getElementById('numeroPresupuesto').textContent.trim(),
+    estado,
     clienteNombre:document.getElementById('clienteNombre').value,
     clienteCuit:document.getElementById('clienteCuit').value,
     clienteTelefono:document.getElementById('clienteTelefono').value,
     fecha:document.getElementById('fechaPresupuesto').value,
     observaciones:document.getElementById('observaciones').value,
     ivaGlobal:ivaGlobal.value,
-    items
+    items:items.map(i=>({...i})),
+    actualizadoEn:new Date().toISOString()
   };
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+}
+
+function guardarDraft(){
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(snapshotPresupuesto(estadoActual)));
 }
 
 function cargarDraft(){
@@ -66,10 +92,13 @@ function cargarDraft(){
     ivaGlobal.value=draft.ivaGlobal ?? '0';
     items=Array.isArray(draft.items)?draft.items:[];
     itemSeq=Math.max(1,...items.map(i=>Number(i.uid)||0))+1;
+    estadoActual=draft.estado==='definitivo'?'definitivo':'borrador';
   } else {
     document.getElementById('fechaPresupuesto').value=hoy();
     ivaGlobal.value='0';
+    estadoActual='borrador';
   }
+  actualizarEstado();
 }
 
 function sumarProductoImportado(p){
@@ -82,7 +111,6 @@ function sumarProductoImportado(p){
 
 function importarProductosPendientes(){
   let huboCambios=false;
-
   let cola=[];
   try{ cola=JSON.parse(localStorage.getItem(ADD_QUEUE_KEY)||'[]'); }catch(e){}
   if(Array.isArray(cola) && cola.length){
@@ -99,7 +127,10 @@ function importarProductosPendientes(){
     huboCambios=true;
   }
 
-  if(huboCambios) guardarDraft();
+  if(huboCambios){
+    marcarComoBorrador();
+    guardarDraft();
+  }
   return huboCambios;
 }
 
@@ -127,7 +158,7 @@ function agregar(id){
   if(existente) existente.cantidad=Number(existente.cantidad||0)+1;
   else items.push({uid:itemSeq++,...p,cantidad:1,precioActual:p.precio,ivaActual:0,extra:0});
   buscar.value=''; resultados.classList.remove('open');
-  render(); guardarDraft();
+  marcarComoBorrador(); render(); guardarDraft();
 }
 
 function calcItem(i){
@@ -156,12 +187,12 @@ function render(){
     contenedor.querySelectorAll('.quote-item').forEach(el=>{
       const uid = Number(el.dataset.uid);
       const item = items.find(x=>x.uid===uid);
-      el.querySelector('.js-cantidad').addEventListener('input',e=>{item.cantidad=Number(e.target.value); actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
-      el.querySelector('.js-precio').addEventListener('input',e=>{item.precioActual=Number(e.target.value); item.pendiente=item.precioActual===999; actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
-      el.querySelector('.js-iva').addEventListener('change',e=>{item.ivaActual=Number(e.target.value); actualizarTotalesSinRender(); guardarDraft();});
+      el.querySelector('.js-cantidad').addEventListener('input',e=>{item.cantidad=Number(e.target.value); marcarComoBorrador(); actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
+      el.querySelector('.js-precio').addEventListener('input',e=>{item.precioActual=Number(e.target.value); item.pendiente=item.precioActual===999; marcarComoBorrador(); actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
+      el.querySelector('.js-iva').addEventListener('change',e=>{item.ivaActual=Number(e.target.value); marcarComoBorrador(); actualizarTotalesSinRender(); guardarDraft();});
       const extra = el.querySelector('.js-extra');
-      if(extra) extra.addEventListener('change',e=>{item.extra=Number(e.target.value); actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
-      el.querySelector('.js-remove').addEventListener('click',()=>{items=items.filter(x=>x.uid!==uid); render(); guardarDraft();});
+      if(extra) extra.addEventListener('change',e=>{item.extra=Number(e.target.value); marcarComoBorrador(); actualizarTotalesSinRender(); el.querySelector('.item-total strong').textContent=dinero(calcItem(item)); guardarDraft();});
+      el.querySelector('.js-remove').addEventListener('click',()=>{items=items.filter(x=>x.uid!==uid); marcarComoBorrador(); render(); guardarDraft();});
     });
   }
   actualizarTotalesSinRender();
@@ -184,10 +215,36 @@ function actualizarTotalesSinRender(){
   document.getElementById('warningPendientes').hidden=!items.some(i=>i.pendiente || Number(i.precioActual)===999);
 }
 
+function validarParaDefinitivo(){
+  if(!items.length){alert('Agregá al menos un producto antes de guardar el presupuesto definitivo.');return false;}
+  if(items.some(i=>i.pendiente || Number(i.precioActual)===999)){
+    return confirm('Hay productos con precio pendiente ($999). ¿Querés guardar el presupuesto como definitivo igualmente?');
+  }
+  return true;
+}
+
+function guardarDefinitivo(){
+  if(!validarParaDefinitivo()) return;
+  if(!confirm('¿Guardar este presupuesto como definitivo? Si después hacés cambios, volverá a marcarse como borrador hasta que lo guardes nuevamente.')) return;
+
+  estadoActual='definitivo';
+  const snapshot=snapshotPresupuesto('definitivo');
+  let guardados=[];
+  try{guardados=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');}catch(e){}
+  if(!Array.isArray(guardados)) guardados=[];
+  const idx=guardados.findIndex(p=>p.numero===snapshot.numero);
+  if(idx>=0) guardados[idx]=snapshot;
+  else guardados.push(snapshot);
+  localStorage.setItem(SAVED_KEY,JSON.stringify(guardados));
+  localStorage.setItem(DRAFT_KEY,JSON.stringify(snapshot));
+  actualizarEstado();
+  alert('Presupuesto guardado como definitivo.');
+}
+
 buscar.addEventListener('input',buscarProductos);
 document.addEventListener('click',e=>{if(!e.target.closest('.product-picker')) resultados.classList.remove('open');});
-ivaGlobal.addEventListener('change',()=>{actualizarTotalesSinRender();guardarDraft();});
-['clienteNombre','clienteCuit','clienteTelefono','fechaPresupuesto','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',guardarDraft));
+ivaGlobal.addEventListener('change',()=>{marcarComoBorrador();actualizarTotalesSinRender();guardarDraft();});
+['clienteNombre','clienteCuit','clienteTelefono','fechaPresupuesto','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{marcarComoBorrador();guardarDraft();}));
 window.addEventListener('storage',e=>{
   if((e.key===ADD_QUEUE_KEY || e.key===PENDING_ADD_KEY) && e.newValue){
     if(importarProductosPendientes()) render();
@@ -195,11 +252,12 @@ window.addEventListener('storage',e=>{
 });
 window.addEventListener('focus',()=>{if(importarProductosPendientes()) render();});
 
-document.getElementById('guardarBorrador').addEventListener('click',()=>{guardarDraft();alert('Borrador guardado localmente. Más adelante lo conectaremos con Firebase.');});
+document.getElementById('guardarBorrador').addEventListener('click',()=>{estadoActual='borrador';actualizarEstado();guardarDraft();alert('Presupuesto guardado como borrador.');});
+document.getElementById('guardarDefinitivo').addEventListener('click',guardarDefinitivo);
 document.getElementById('generarPdf').addEventListener('click',()=>{
-  if(!items.length){alert('Agregá al menos un producto antes de generar el PDF.');return;}
-  if(items.some(i=>i.pendiente || Number(i.precioActual)===999) && !confirm('Hay productos con precio pendiente. ¿Querés continuar igualmente?')) return;
-  alert('La composición del presupuesto ya está funcionando. El próximo paso será generar el PDF real con el logo y los datos de Chourrout.');
+  if(!items.length){alert('Agregá al menos un producto antes de exportar el PDF.');return;}
+  if(items.some(i=>i.pendiente || Number(i.precioActual)===999) && !confirm('Hay productos con precio pendiente. ¿Querés exportar el PDF igualmente?')) return;
+  alert('La exportación real a PDF es el próximo paso. La interfaz ya quedó preparada con Borrador / Guardado definitivo / Exportar PDF.');
 });
 
 cargarDraft();
