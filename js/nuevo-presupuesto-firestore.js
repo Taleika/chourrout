@@ -7,9 +7,12 @@ const CLIENTES_KEY='chourrout_clientes';
 const ADD_QUEUE_KEY='chourrout_productos_para_agregar';
 const PENDING_ADD_KEY='chourrout_producto_para_agregar';
 const NUMERACION_REF=doc(db,'configuracion','numeracionPresupuestos');
+const CONFIG_REF=doc(db,'configuracion','general');
 let catalogoFirestore=[];
 let syncTimer=null;
 let reservandoNumero=null;
+let configuracionGeneral=null;
+let inicioComoNuevo=false;
 
 function leerJson(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch(e){return fallback;}}
 function escribirJson(key,value){localStorage.setItem(key,JSON.stringify(value));}
@@ -20,11 +23,24 @@ function formatearNumero(n){return String(Math.max(0,Number(n)||0)).padStart(6,'
 function iniciarPresupuestoVacioSiCorresponde(){
   const url=new URL(location.href);
   if(url.searchParams.get('nuevo')!=='1')return;
+  inicioComoNuevo=true;
   localStorage.removeItem(DRAFT_KEY);
   localStorage.removeItem(ADD_QUEUE_KEY);
   localStorage.removeItem(PENDING_ADD_KEY);
   url.searchParams.delete('nuevo');
   history.replaceState({},'',url.pathname+(url.search||'')+(url.hash||''));
+}
+
+async function cargarConfiguracionGeneral(){
+  try{
+    const snap=await getDoc(CONFIG_REF);
+    configuracionGeneral=snap.exists()?snap.data():null;
+    window.CH_CONFIG=configuracionGeneral||{};
+  }catch(error){
+    console.warn('No se pudo cargar la configuración general.',error);
+    configuracionGeneral=null;
+    window.CH_CONFIG={};
+  }
 }
 
 async function reservarNumeroCorrelativo(){
@@ -33,8 +49,6 @@ async function reservarNumeroCorrelativo(){
     const contadorSnap=await tx.get(NUMERACION_REF);
     let ultimo=contadorSnap.exists()?Number(contadorSnap.data().ultimo||0):0;
     let candidato=ultimo+1;
-
-    // Evita colisiones con presupuestos existentes, incluidos los de pruebas anteriores.
     while(candidato<1000000){
       const numero=formatearNumero(candidato);
       const existente=await tx.get(doc(db,'presupuestos',idPresupuesto(numero)));
@@ -139,6 +153,20 @@ function prepararBorradorConPreciosActuales(){
   escribirJson(DRAFT_KEY,draft);
 }
 
+function aplicarConfiguracionANuevo(){
+  if(!inicioComoNuevo||!configuracionGeneral)return;
+  const obs=document.getElementById('observaciones');
+  const iva=document.getElementById('ivaGlobal');
+  if(obs&&!obs.value.trim()&&configuracionGeneral.observacionesDefault)obs.value=configuracionGeneral.observacionesDefault;
+  if(iva&&configuracionGeneral.ivaPorDefecto!=null)iva.value=String(configuracionGeneral.ivaPorDefecto);
+  const draft=leerJson(DRAFT_KEY,null);
+  if(draft){
+    draft.observaciones=obs?.value||draft.observaciones||'';
+    draft.ivaGlobal=iva?.value??draft.ivaGlobal??'0';
+    escribirJson(DRAFT_KEY,draft);
+  }
+}
+
 async function guardarSnapshotFirestore(snapshot){
   if(!snapshot)return;
   snapshot={...snapshot,items:(snapshot.items||[]).map(i=>({...i,cantidad:enteroNoNegativo(i.cantidad)}))};
@@ -176,9 +204,10 @@ async function sincronizarBorrador(){
 function programarSync(){clearTimeout(syncTimer);syncTimer=setTimeout(sincronizarBorrador,700);}
 
 iniciarPresupuestoVacioSiCorresponde();
-await Promise.all([cargarCatalogoFirestore(),cargarClientesFirestore()]);
+await Promise.all([cargarCatalogoFirestore(),cargarClientesFirestore(),cargarConfiguracionGeneral()]);
 prepararBorradorConPreciosActuales();
 await import('./nuevo-presupuesto.js');
+aplicarConfiguracionANuevo();
 
 const draftInicial=leerJson(DRAFT_KEY,null);
 const numeroDom=document.getElementById('numeroPresupuesto');
