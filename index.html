@@ -60,36 +60,13 @@
       </div>
 
       <section class="cards">
-        <a class="card" href="presupuestos/historial.html">
-          <div class="card-icon">▤</div>
-          <h4>Presupuestos</h4>
-          <p>Consultar presupuestos anteriores, duplicarlos o volver a generar el PDF.</p>
-          <div class="card-arrow">→</div>
-        </a>
-        <a class="card" href="admin/productos.html">
-          <div class="card-icon">▦</div>
-          <h4>Lista de productos</h4>
-          <p>Administrar productos, precios, IVA, medidas y disponibilidad.</p>
-          <div class="card-arrow">→</div>
-        </a>
-        <a class="card" href="admin/clientes.html">
-          <div class="card-icon">♙</div>
-          <h4>Clientes</h4>
-          <p>Guardar datos de clientes y consultar su historial de presupuestos.</p>
-          <div class="card-arrow">→</div>
-        </a>
-        <a class="card" href="admin/configuracion.html">
-          <div class="card-icon">⚙</div>
-          <h4>Configuración</h4>
-          <p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p>
-          <div class="card-arrow">→</div>
-        </a>
+        <a class="card" href="presupuestos/historial.html"><div class="card-icon">▤</div><h4>Presupuestos</h4><p>Consultar presupuestos anteriores, duplicarlos o volver a generar el PDF.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/productos.html"><div class="card-icon">▦</div><h4>Lista de productos</h4><p>Administrar productos, precios, IVA, medidas y disponibilidad.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/clientes.html"><div class="card-icon">♙</div><h4>Clientes</h4><p>Guardar datos de clientes y consultar su historial de presupuestos.</p><div class="card-arrow">→</div></a>
+        <a class="card" href="admin/configuracion.html"><div class="card-icon">⚙</div><h4>Configuración</h4><p>Datos comerciales, IVA, validez del presupuesto y opciones generales.</p><div class="card-arrow">→</div></a>
       </section>
 
-      <div class="section-head">
-        <div><h3>Resumen</h3><p>Estado inicial de la base de productos.</p></div>
-      </div>
-
+      <div class="section-head"><div><h3>Resumen</h3><p>Estado inicial de la base de productos.</p></div></div>
       <section class="stats">
         <div class="stat"><div class="stat-label">Productos cargados</div><div class="stat-value">128</div><div class="stat-note">Base inicial normalizada</div></div>
         <div class="stat"><div class="stat-label">Precios pendientes</div><div class="stat-value pending">35</div><div class="stat-note">Cargados provisoriamente en $999</div></div>
@@ -97,5 +74,6 @@
       </section>
     </main>
   </div>
+  <script type="module">import { protegerPagina } from './js/auth.js'; protegerPagina();</script>
 </body>
 </html>
